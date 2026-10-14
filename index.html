@@ -3,31 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trilha Completa de Cibersegurança</title>
+    <title>CyberQuest | Trilha Gamificada & Criador de Personagem</title>
     <style>
         :root {
             --primary: #00f3ff;
             --accent: #00ff66;
+            --gold: #ffcc00;
+            --danger: #ff3366;
             --bg-card: rgba(12, 12, 22, 0.92);
-            --border-color: rgba(0, 243, 255, 0.3);
+            --border-color: rgba(0, 243, 255, 0.35);
         }
 
         [data-theme="matrix"] {
             --primary: #00ff33;
             --accent: #00ffff;
-            --border-color: rgba(0, 255, 51, 0.3);
+            --border-color: rgba(0, 255, 51, 0.35);
         }
 
         [data-theme="purple"] {
             --primary: #bd00ff;
             --accent: #00f3ff;
-            --border-color: rgba(189, 0, 255, 0.3);
+            --border-color: rgba(189, 0, 255, 0.35);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
         }
 
         body {
@@ -41,7 +59,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Canvas do Efeito Matrix no Fundo */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -52,23 +69,197 @@
             background: #000;
         }
 
+        /* Tela de Login / Registro */
+        #auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .auth-box {
+            background: rgba(10, 12, 24, 0.96);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.25);
+            text-align: center;
+            margin: auto;
+        }
+
+        .auth-box h2 {
+            color: var(--primary);
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            text-shadow: 0 0 12px var(--primary);
+        }
+
+        .privacy-badge {
+            display: inline-block;
+            background: rgba(0, 255, 102, 0.12);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.78em;
+            padding: 5px 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #b0bec5;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85em;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 11px 40px 11px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--border-color);
+        }
+
+        .toggle-pass {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #b0bec5;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .rules-checklist {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 6px;
+            font-size: 0.75em;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .rule-item {
+            color: #78909c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s ease;
+        }
+
+        .rule-item.valid {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .auth-error {
+            color: var(--danger);
+            font-size: 0.85em;
+            margin-bottom: 12px;
+            min-height: 20px;
+            font-weight: 600;
+        }
+
+        .btn-auth-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--border-color);
+        }
+
+        .btn-auth-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px var(--accent);
+        }
+
+        /* Container Principal */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            display: none;
         }
 
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(10, 10, 18, 0.85);
+            background: rgba(10, 10, 18, 0.9);
             backdrop-filter: blur(10px);
             padding: 12px 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -77,6 +268,7 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .theme-selector span {
@@ -89,7 +281,7 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.85em;
@@ -103,15 +295,16 @@
             font-weight: bold;
         }
 
-        .backup-controls {
+        .action-controls {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .btn-backup {
-            background: rgba(0, 255, 102, 0.15);
-            border: 1px solid var(--accent);
-            color: var(--accent);
+        .btn-logout {
+            background: rgba(255, 51, 102, 0.15);
+            border: 1px solid var(--danger);
+            color: var(--danger);
             padding: 6px 14px;
             border-radius: 6px;
             cursor: pointer;
@@ -120,17 +313,501 @@
             transition: all 0.3s ease;
         }
 
-        .btn-backup:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 12px var(--accent);
+        .btn-logout:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 12px var(--danger);
         }
 
+        /* HUD de Jogador + Vitrine do Avatar & Setup */
+        .player-hud {
+            background: linear-gradient(135deg, rgba(15, 18, 35, 0.95) 0%, rgba(8, 10, 20, 0.95) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            display: grid;
+            grid-template-columns: 260px 1fr auto;
+            align-items: center;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .player-hud {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        .hud-avatar-showcase {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .hud-svg-wrapper {
+            width: 235px;
+            height: 175px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a233a 0%, #070913 100%);
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-customize-open {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold) 0%, #ff8800 100%);
+            color: #000;
+            border: none;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.84em;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 12px rgba(255, 204, 0, 0.4);
+        }
+
+        .btn-customize-open:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 18px var(--gold);
+        }
+
+        .hud-center-info {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .player-header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 900px) {
+            .player-header-row {
+                justify-content: center;
+            }
+        }
+
+        .level-pill {
+            background: var(--gold);
+            color: #000;
+            font-weight: 900;
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .player-header-row h2 {
+            color: #fff;
+            font-size: 1.5em;
+            font-family: monospace;
+        }
+
+        .player-rank {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9em;
+            background: rgba(0, 243, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .xp-section {
+            width: 100%;
+        }
+
+        .xp-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88em;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #cfd8dc;
+        }
+
+        .xp-bar-container {
+            width: 100%;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .equipped-summary {
+            font-size: 0.82em;
+            color: #cfd8dc;
+            background: rgba(0,0,0,0.45);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .stats-counters {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 14px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .stat-pill .stat-val {
+            font-size: 1.25em;
+            font-weight: 800;
+            color: var(--gold);
+            display: block;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        .stat-pill .stat-label {
+            font-size: 0.72em;
+            color: #b0bec5;
+            text-transform: uppercase;
+        }
+
+        /* Modal do Criador de Personagem e Setup */
+        #avatar-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 3600;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 15px;
+            overflow-y: auto;
+        }
+
+        .studio-box {
+            background: #0b0e1a;
+            border: 2px solid var(--primary);
+            border-radius: 18px;
+            max-width: 1120px;
+            width: 100%;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.3);
+        }
+
+        .studio-header {
+            padding: 16px 24px;
+            background: rgba(0, 243, 255, 0.08);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .studio-header h2 {
+            color: var(--primary);
+            font-size: 1.35em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .studio-body {
+            display: grid;
+            grid-template-columns: 390px 1fr;
+            min-height: 480px;
+        }
+
+        @media (max-width: 900px) {
+            .studio-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .studio-preview-col {
+            background: radial-gradient(circle at center, #161f33 0%, #060810 100%);
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .studio-preview-col {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+        }
+
+        .studio-svg-stage {
+            width: 100%;
+            height: 300px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-switch {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .cam-btn {
+            flex: 1;
+            padding: 6px 8px;
+            font-size: 0.75em;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.06);
+            color: #cfd8dc;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cam-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            font-weight: 800;
+        }
+
+        .gender-switch {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .gender-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gender-btn.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 12px var(--primary);
+        }
+
+        .skin-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .skin-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: transform 0.2s;
+        }
+
+        .skin-dot.active {
+            transform: scale(1.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .unlock-hint {
+            font-size: 0.78em;
+            color: var(--gold);
+            text-align: center;
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 100%;
+            line-height: 1.4;
+        }
+
+        .studio-options-col {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cat-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 12px;
+        }
+
+        .cat-tab {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #cfd8dc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cat-tab.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: 800;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 4px 8px 25px 4px;
+        }
+
+        .item-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            min-height: 125px;
+            height: auto;
+        }
+
+        .item-card:hover:not(.locked) {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .item-card.selected {
+            background: rgba(0, 243, 255, 0.15);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .item-card.locked {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .item-icon {
+            font-size: 1.8em;
+            line-height: 1.1;
+        }
+
+        .item-name {
+            font-size: 0.84em;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .item-lvl-tag {
+            font-size: 0.72em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .item-card:not(.locked) .item-lvl-tag {
+            background: rgba(0, 255, 102, 0.15);
+            color: var(--accent);
+        }
+
+        .item-card.locked .item-lvl-tag {
+            background: rgba(255, 51, 102, 0.2);
+            color: var(--danger);
+        }
+
+        .studio-footer {
+            padding: 14px 24px;
+            background: rgba(0, 0, 0, 0.85);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .btn-save-avatar {
+            background: linear-gradient(135deg, var(--accent) 0%, #00b34d 100%);
+            color: #000;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.95em;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent);
+            margin-left: auto;
+        }
+
+        /* Cabeçalho da Trilha */
         header {
             text-align: center;
             color: #fff;
-            margin-bottom: 35px;
-            padding: 25px 0;
+            margin-bottom: 30px;
+            padding: 22px 15px;
             background: var(--bg-card);
             backdrop-filter: blur(12px);
             border-radius: 15px;
@@ -139,23 +816,116 @@
         }
 
         header h1 {
-            font-size: 2.8em;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            margin-bottom: 8px;
             color: var(--primary);
             text-shadow: 0 0 15px var(--primary);
-            letter-spacing: 1px;
         }
 
         header p {
-            font-size: 1.15em;
+            font-size: 1.1em;
             color: #b0c4de;
         }
 
+        /* Galeria de Conquistas / Medalhas */
+        .achievements-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 24px;
+            margin-bottom: 35px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .achievements-panel h3 {
+            color: var(--gold);
+            margin-bottom: 18px;
+            font-size: 1.25em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 14px;
+        }
+
+        .badge-item {
+            background: rgba(20, 24, 40, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            opacity: 0.78;
+            transition: all 0.35s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.16) 0%, rgba(0, 255, 102, 0.08) 100%);
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.35);
+            transform: translateY(-4px);
+        }
+
+        .badge-icon {
+            font-size: 2em;
+            margin-bottom: 4px;
+            display: block;
+            filter: grayscale(80%);
+            transition: filter 0.3s ease, transform 0.3s ease;
+        }
+
+        .badge-item.unlocked .badge-icon {
+            filter: grayscale(0%);
+            transform: scale(1.12);
+        }
+
+        .badge-title {
+            font-size: 0.85em;
+            font-weight: 800;
+            color: #fff;
+            display: block;
+        }
+
+        .badge-desc {
+            font-size: 0.74em;
+            color: #b0bec5;
+            line-height: 1.3;
+        }
+
+        .badge-status-pill {
+            margin-top: 4px;
+            font-size: 0.68em;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.08);
+            color: #90a4ae;
+        }
+
+        .badge-item.unlocked .badge-status-pill {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 8px var(--gold);
+        }
+
+        /* Mapa de Níveis */
         .trilha-visual {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
             gap: 15px;
             background: rgba(10, 10, 18, 0.85);
@@ -170,7 +940,7 @@
             flex-direction: column;
             align-items: center;
             flex: 1;
-            min-width: 130px;
+            min-width: 120px;
         }
 
         .numero-etapa {
@@ -187,13 +957,6 @@
             color: var(--primary);
             margin-bottom: 8px;
             box-shadow: 0 0 12px var(--primary);
-            transition: all 0.3s ease;
-        }
-
-        .numero-etapa:hover {
-            transform: scale(1.15);
-            background: var(--primary);
-            color: #000;
         }
 
         .nome-etapa {
@@ -214,9 +977,10 @@
             .seta { transform: rotate(90deg); margin: 5px 0; }
         }
 
+        /* Cartões de Missões (Módulos) */
         .conteudo {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
@@ -233,27 +997,63 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
+        }
+
+        .card.quest-completed {
+            border-left-color: var(--accent);
+            border-color: rgba(0, 255, 102, 0.4);
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.15);
         }
 
         .card:hover {
-            transform: translateY(-7px);
+            transform: translateY(-6px);
             box-shadow: 0 15px 40px var(--border-color);
+        }
+
+        .quest-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .quest-tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(0, 243, 255, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .card.quest-completed .quest-tag {
+            background: rgba(0, 255, 102, 0.2);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .xp-reward {
+            color: var(--gold);
+            font-weight: 800;
         }
 
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4em;
+            font-size: 1.5em;
             margin-right: 15px;
             color: white;
             background: rgba(255, 255, 255, 0.05);
@@ -262,27 +1062,41 @@
         }
 
         .card h3 {
-            font-size: 1.25em;
+            font-size: 1.2em;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .tempo {
             display: inline-block;
             background: rgba(255, 255, 255, 0.08);
-            padding: 4px 10px;
+            padding: 3px 10px;
             border-radius: 20px;
-            font-size: 0.8em;
+            font-size: 0.78em;
             color: var(--primary);
-            border: 1px solid var(--border-color);
-            margin-bottom: 12px;
         }
 
         .card p {
             color: #b0bec5;
-            line-height: 1.6;
-            font-size: 0.95em;
+            line-height: 1.5;
+            font-size: 0.92em;
             margin-bottom: 15px;
+        }
+
+        .module-mini-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .module-mini-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         .btn-expandir {
@@ -300,7 +1114,7 @@
         }
 
         .btn-expandir:hover {
-            opacity: 0.9;
+            opacity: 0.92;
             transform: scale(1.02);
             color: #fff;
         }
@@ -322,7 +1136,7 @@
 
         .card-topicos h4, .card-recursos h4, .bloco-notas h4 {
             color: var(--primary);
-            font-size: 0.92em;
+            font-size: 0.9em;
             margin-bottom: 8px;
             margin-top: 12px;
         }
@@ -331,11 +1145,27 @@
 
         .card-topicos li {
             color: #cfd8dc;
-            font-size: 0.88em;
-            padding: 5px 0;
+            font-size: 0.86em;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .topic-label {
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+        }
+
+        .xp-gain-tag {
+            font-size: 0.75em;
+            color: var(--gold);
+            font-weight: 700;
+            white-space: nowrap;
         }
 
         .card-topicos input[type="checkbox"] {
@@ -347,7 +1177,7 @@
         }
 
         .card-recursos li {
-            font-size: 0.88em;
+            font-size: 0.86em;
             background: rgba(255, 255, 255, 0.04);
             padding: 8px 12px;
             border-radius: 6px;
@@ -367,10 +1197,6 @@
             text-decoration: underline;
         }
 
-        .bloco-notas {
-            margin-top: 15px;
-        }
-
         .bloco-notas textarea {
             width: 100%;
             height: 75px;
@@ -384,12 +1210,7 @@
             resize: vertical;
         }
 
-        .bloco-notas textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 8px var(--border-color);
-        }
-
+        /* Progresso Geral e Certificado */
         .progresso {
             background: var(--bg-card);
             backdrop-filter: blur(12px);
@@ -409,7 +1230,7 @@
 
         .barra-progresso {
             width: 100%;
-            height: 14px;
+            height: 16px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
@@ -441,22 +1262,51 @@
         }
 
         #btn-certificado {
-            background: linear-gradient(135deg, #00ff66 0%, #00b34d 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, #ff9900 100%);
             color: #000;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 900;
             cursor: pointer;
             display: none;
-            box-shadow: 0 0 15px var(--accent);
+            box-shadow: 0 0 20px var(--gold);
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.06); }
             100% { transform: scale(1); }
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 4000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cyber-toast {
+            background: rgba(10, 15, 30, 0.95);
+            border: 2px solid var(--gold);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .modal {
@@ -464,7 +1314,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
-            z-index: 1000;
+            z-index: 3500;
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -472,21 +1322,21 @@
 
         .modal-content {
             background: #0a0a14;
-            border: 3px solid var(--accent);
+            border: 3px solid var(--gold);
             border-radius: 15px;
             padding: 40px;
             max-width: 700px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 0 50px rgba(0, 255, 102, 0.4);
+            box-shadow: 0 0 50px rgba(255, 204, 0, 0.4);
             position: relative;
         }
 
         .modal-content h2 {
-            color: var(--accent);
+            color: var(--gold);
             font-size: 2.2em;
             margin-bottom: 15px;
-            text-shadow: 0 0 10px var(--accent);
+            text-shadow: 0 0 10px var(--gold);
         }
 
         .modal-content p {
@@ -504,6 +1354,7 @@
             border-bottom: 2px dashed var(--primary);
             display: inline-block;
             padding-bottom: 5px;
+            font-family: monospace;
         }
 
         .btn-fechar-modal {
@@ -534,21 +1385,164 @@
     </style>
 </head>
 <body data-theme="ciano">
-    <!-- Canvas Matrix Rain Background -->
     <canvas id="matrix-canvas"></canvas>
+    <div id="toast-container"></div>
 
-    <div class="container">
+    <!-- Tela de Login e Registro -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h2>🔐 Terminal CyberQuest</h2>
+            <span class="privacy-badge">🛡️ Sem Dados Sensíveis (Sem E-mail, CPF ou Celular)</span>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Entrar</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Criar Operador</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                <div class="input-group">
+                    <label for="auth-user">Nome de Usuário (Codinome - Máx. 8 caracteres):</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="auth-user" maxlength="8" placeholder="Ex: Cyb3r#01" oninput="validateInputs()" required autocomplete="off">
+                    </div>
+                    <div class="rules-checklist" id="user-rules">
+                        <span class="rule-item" data-rule="upper">▪ 1 Maiúscula (A-Z)</span>
+                        <span class="rule-item" data-rule="lower">▪ 1 Minúscula (a-z)</span>
+                        <span class="rule-item" data-rule="num">▪ 1 Número (0-9)</span>
+                        <span class="rule-item" data-rule="spec">▪ 1 Especial (@#$!)</span>
+                        <span class="rule-item" data-rule="len" style="grid-column: span 2;">▪ Entre 4 e 8 caracteres</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="auth-pass">Senha de Acesso (Máx. 8 caracteres):</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="auth-pass" maxlength="8" placeholder="Ex: Key$2026" oninput="validateInputs()" required>
+                        <button type="button" class="toggle-pass" onclick="togglePasswordVisibility()">👁️</button>
+                    </div>
+                    <div class="rules-checklist" id="pass-rules">
+                        <span class="rule-item" data-rule="upper">▪ 1 Maiúscula (A-Z)</span>
+                        <span class="rule-item" data-rule="lower">▪ 1 Minúscula (a-z)</span>
+                        <span class="rule-item" data-rule="num">▪ 1 Número (0-9)</span>
+                        <span class="rule-item" data-rule="spec">▪ 1 Especial (@#$!)</span>
+                        <span class="rule-item" data-rule="len" style="grid-column: span 2;">▪ Entre 4 e 8 caracteres</span>
+                    </div>
+                </div>
+
+                <div class="auth-error" id="auth-error"></div>
+
+                <button type="submit" class="btn-auth-submit" id="btn-auth-action">Iniciar Sessão</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal do Estúdio de Criação de Personagem e Setup -->
+    <div id="avatar-modal">
+        <div class="studio-box">
+            <div class="studio-header">
+                <h2>👕 Estúdio Cyber: Personagem & Setup</h2>
+                <span style="color: var(--gold); font-weight: 700; font-size: 0.9em;" id="studio-lvl-indicator">Seu Nível Atual: LVL 1</span>
+            </div>
+
+            <div class="studio-body">
+                <div class="studio-preview-col">
+                    <div class="gender-switch">
+                        <button type="button" class="gender-btn active" id="btn-gen-m" onclick="setGender('masculino')">♂️ Masculino</button>
+                        <button type="button" class="gender-btn" id="btn-gen-f" onclick="setGender('feminino')">♀️ Feminino</button>
+                    </div>
+
+                    <div class="skin-selector">
+                        <span style="font-size: 0.8em; color: #b0bec5;">Pele:</span>
+                        <div class="skin-dot" style="background: #f5cba7;" onclick="setSkin('#f5cba7', this)"></div>
+                        <div class="skin-dot active" style="background: #e0ac69;" onclick="setSkin('#e0ac69', this)"></div>
+                        <div class="skin-dot" style="background: #c68642;" onclick="setSkin('#c68642', this)"></div>
+                        <div class="skin-dot" style="background: #8d5524;" onclick="setSkin('#8d5524', this)"></div>
+                        <div class="skin-dot" style="background: #5c3818;" onclick="setSkin('#5c3818', this)"></div>
+                    </div>
+
+                    <div class="camera-switch">
+                        <button type="button" class="cam-btn active" id="cam-all" onclick="setStudioCamera('all')">👁️ Tudo Inteiro</button>
+                        <button type="button" class="cam-btn" id="cam-char" onclick="setStudioCamera('char')">🧍 Só Personagem</button>
+                        <button type="button" class="cam-btn" id="cam-setup" onclick="setStudioCamera('setup')">💻 Só Setup/PC</button>
+                    </div>
+
+                    <div class="studio-svg-stage" id="studio-svg-container"></div>
+
+                    <div class="unlock-hint">
+                        🔓 Os itens de vestuário estão separados por sexo! Avance nos módulos de estudo para subir de nível e desbloquear novos prêmios.
+                    </div>
+                </div>
+
+                <div class="studio-options-col">
+                    <div class="cat-tabs" id="studio-cat-tabs"></div>
+                    <div class="items-grid" id="studio-items-grid"></div>
+                </div>
+            </div>
+
+            <div class="studio-footer">
+                <span style="font-size: 0.82em; color: #90a4ae;">💡 Role a grade de itens para baixo para ver todas as opções da categoria.</span>
+                <button type="button" class="btn-save-avatar" onclick="closeAvatarStudio()">✔ Guardar Visual & Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plataforma Principal -->
+    <div class="container" id="main-app">
         <div class="top-bar">
             <div class="theme-selector">
                 <span>Tema:</span>
                 <button class="theme-btn active" onclick="setTheme('ciano', this)">Ciano</button>
                 <button class="theme-btn" onclick="setTheme('matrix', this)">Matrix</button>
                 <button class="theme-btn" onclick="setTheme('purple', this)">Roxo</button>
+                <button class="theme-btn active" id="btn-sound" onclick="toggleSound()">🔊 Som: ON</button>
             </div>
-            <div class="backup-controls">
-                <button class="btn-backup" onclick="exportarBackup()">📥 Exportar</button>
-                <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar</button>
-                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarBackup(event)">
+            <div class="action-controls">
+                <button class="btn-logout" onclick="logoutUser()">🚪 Sair</button>
+            </div>
+        </div>
+
+        <!-- Painel RPG do Jogador -->
+        <div class="player-hud">
+            <div class="hud-avatar-showcase">
+                <div class="hud-svg-wrapper" id="hud-svg-container"></div>
+                <button class="btn-customize-open" onclick="openAvatarStudio()">👕 Personalizar Avatar & Setup</button>
+            </div>
+
+            <div class="hud-center-info">
+                <div class="player-header-row">
+                    <span class="level-pill" id="player-lvl-badge">LVL 1</span>
+                    <h2 id="hud-username">Operador Cyber</h2>
+                    <span class="player-rank" id="player-rank-title">Recruta Digital</span>
+                </div>
+
+                <div class="xp-section">
+                    <div class="xp-header">
+                        <span id="xp-text">0 / 2800 XP Total</span>
+                        <span id="next-rank-text">Próximo Nível (Novos Itens): 350 XP</span>
+                    </div>
+                    <div class="xp-bar-container">
+                        <div class="xp-bar-fill" id="xp-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div class="equipped-summary" id="equipped-summary-text">
+                    👕 Camiseta Básica | 👖 Calça Jeans | 💻 Notebook Básico
+                </div>
+            </div>
+
+            <div class="stats-counters">
+                <div class="stat-pill">
+                    <span class="stat-val" id="stat-coins">🪙 0</span>
+                    <span class="stat-label">Créditos</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-val" id="stat-quests">0/8</span>
+                    <span class="stat-label">Missões</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-val" id="stat-badges">0/8</span>
+                    <span class="stat-label">Medalhas</span>
+                </div>
             </div>
         </div>
 
@@ -556,6 +1550,12 @@
             <h1>🔒 Trilha de Cibersegurança</h1>
             <p>Do Zero ao Profissional: Fundamentos, Redes, Blue team, Red team, e Governança</p>
         </header>
+
+        <!-- Galeria de Medalhas Desbloqueáveis -->
+        <div class="achievements-panel">
+            <h3>🏆 Conquistas & Insígnias de Especialista</h3>
+            <div class="badges-grid" id="badges-container"></div>
+        </div>
 
         <div class="trilha-visual">
             <div class="etapa">
@@ -584,39 +1584,47 @@
             </div>
         </div>
 
+        <!-- Módulos / Missões -->
         <div class="conteudo" id="conteudo"></div>
 
         <div class="progresso">
-            <h3>📊 Seu Progresso na Trilha</h3>
+            <h3>📊 Progresso Global da Campanha</h3>
             <div class="barra-progresso">
                 <div class="progresso-preenchido" id="barraProgresso"></div>
             </div>
             <div class="progresso-container-info">
                 <div class="progresso-texto">
-                    <span id="progressoTexto">0%</span> concluído - Continue firme nos estudos!
+                    <span id="progressoTexto">0%</span> concluído - Continue firme nas missões!
                 </div>
-                <button id="btn-certificado" onclick="abrirCertificado()">🏆 Gerar Certificado</button>
+                <button id="btn-certificado" onclick="abrirCertificado()">🏆 Resgatar Certificado de Mestre</button>
             </div>
         </div>
+
+        <footer>
+            <p>💡 Dica: Complete cada missão para ganhar XP, subir de nível e liberar novas roupas e equipamentos para o seu Setup | © 2026 Trilha Cibersegurança</p>
+        </footer>
     </div>
 
     <!-- Modal de Certificado -->
     <div class="modal" id="modalCertificado">
         <div class="modal-content">
-            <h2>🎉 Parabéns, Conquistador!</h2>
-            <p>Este certificado atesta que o estudante concluiu com excelência todos os módulos da Trilha de Cibersegurança:</p>
-            <div class="certificado-nome">Marcelo Bispo De Oliveira Junior</div>
+            <h2>🎉 Missão Cumprida, Lenda!</h2>
+            <p>Este certificado atesta que o operador concluiu com excelência 100% das missões da Trilha de Cibersegurança:</p>
+            <div class="certificado-nome" id="certificado-operador">Operador</div>
             <p>Demonstrando dedicação e competência técnica em Fundamentos, Redes, Análise Defensiva (Blue Team), Operações Ofensivas (Red Team), Governança e Preparação de Carreira.</p>
             <button class="btn-fechar-modal" onclick="fecharCertificado()">Fechar Certificado</button>
         </div>
     </div>
 
-    <footer>
-        <p>💡 Dica: Marque os tópicos e utilize o bloco de anotações em cada módulo para registrar seus comandos | © 2026 Trilha Cibersegurança</p>
-    </footer>
-
     <script>
-        // Efeito Matrix (Chuva de números e letras caindo no fundo)
+        // Limpeza Total de Todos os Usuários e Dados Antigos (Reset v3)
+        if (!localStorage.getItem('db_v3_full_wipe')) {
+            localStorage.clear();
+            sessionStorage.clear();
+            localStorage.setItem('db_v3_full_wipe', 'true');
+        }
+
+        // Efeito Matrix no Fundo
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         const fontSize = 16;
@@ -653,20 +1661,209 @@
         }
         setInterval(drawMatrix, 33);
 
-        // Seletor de Cores / Temas
+        // Variáveis Globais de Estado e Som
+        let soundEnabled = true;
+        let authMode = 'login';
+        let currentUser = null;
+        let currentLevel = 1;
+        let previousLevel = 1;
+        let activeStudioCategory = 'top';
+        let studioCameraMode = 'all';
+
+        // Seletor de Temas
         function setTheme(theme, btnElement) {
             document.body.setAttribute('data-theme', theme);
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            localStorage.setItem('cyberTheme', theme);
+            document.querySelectorAll('.theme-selector .theme-btn:not(#btn-sound)').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+            localStorage.setItem('cyberTheme_v3', theme);
         }
 
-        const savedTheme = localStorage.getItem('cyberTheme');
+        const savedTheme = localStorage.getItem('cyberTheme_v3');
         if (savedTheme) {
-            setTheme(savedTheme, document.querySelector(`.theme-btn[onclick*="${savedTheme}"]`) || document.querySelector('.theme-btn'));
+            setTheme(savedTheme, document.querySelector(`.theme-btn[onclick*="${savedTheme}"]`));
         }
 
-        // Dados da Trilha
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('btn-sound');
+            btn.textContent = soundEnabled ? '🔊 Som: ON' : '🔇 Som: OFF';
+            btn.classList.toggle('active', soundEnabled);
+        }
+
+        function playCyberSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'xp') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.12);
+                } else if (type === 'levelup') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(660, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                }
+            } catch (e) {}
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'cyber-toast';
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        // Catálogo Estritamente Separado por Sexo ('M' = Masculino, 'F' = Feminino, 'U' = Unissex)
+        const catalogItems = {
+            top: [
+                { id: 'm_camiseta_basica', name: 'Camiseta Básica', gender: 'M', lvl: 1, icon: '👕', color: '#37474f', type: 'tshirt' },
+                { id: 'm_regata_treino', name: 'Camiseta Regata', gender: 'M', lvl: 1, icon: '🎽', color: '#455a64', type: 'tank' },
+                { id: 'm_camiseta_linux', name: 'Camiseta Tux Linux', gender: 'M', lvl: 2, icon: '🐧', color: '#212121', type: 'tshirt_logo' },
+                { id: 'm_moletom_hacker', name: 'Casaco Moletom', gender: 'M', lvl: 3, icon: '🧥', color: '#1b1b2f', type: 'hoodie' },
+                { id: 'm_camisa_cyber', name: 'Camisa Tática Ciano', gender: 'M', lvl: 4, icon: '👔', color: '#00838f', type: 'tshirt' },
+                { id: 'm_jaqueta_redteam', name: 'Casaco Red Team', gender: 'M', lvl: 5, icon: '🔥', color: '#b71c1c', type: 'jacket' },
+                { id: 'm_sobretudo_matrix', name: 'Casaco Matrix Pro', gender: 'M', lvl: 7, icon: '🕶️', color: '#0d1b1e', type: 'coat' },
+
+                { id: 'f_blusa_casual', name: 'Blusa Casual', gender: 'F', lvl: 1, icon: '👚', color: '#ec407a', type: 'blouse' },
+                { id: 'f_camiseta_babylook', name: 'Camiseta Baby Look', gender: 'F', lvl: 1, icon: '👕', color: '#5c6bc0', type: 'tshirt' },
+                { id: 'f_blusa_linux', name: 'Blusa Tux Linux', gender: 'F', lvl: 2, icon: '🐧', color: '#212121', type: 'tshirt_logo' },
+                { id: 'f_casaco_hoodie', name: 'Casaco Hoodie Hacker', gender: 'F', lvl: 3, icon: '🧥', color: '#311b92', type: 'hoodie' },
+                { id: 'f_blusa_neon', name: 'Blusa Cropped Neon', gender: 'F', lvl: 4, icon: '✨', color: '#00acc1', type: 'blouse' },
+                { id: 'f_jaqueta_redteam', name: 'Casaco Red Team Fem', gender: 'F', lvl: 5, icon: '🔥', color: '#c62828', type: 'jacket' },
+                { id: 'f_sobretudo_matrix', name: 'Casaco Matrix Pro Fem', gender: 'F', lvl: 7, icon: '🕶️', color: '#0d1b1e', type: 'coat' }
+            ],
+            bottom: [
+                { id: 'm_calca_jeans', name: 'Calça Jeans', gender: 'M', lvl: 1, icon: '👖', color: '#1565c0', type: 'pants' },
+                { id: 'm_bermuda_casual', name: 'Bermuda Casual', gender: 'M', lvl: 1, icon: '🩳', color: '#546e7a', type: 'shorts' },
+                { id: 'm_calca_cargo', name: 'Calça Cargo Tática', gender: 'M', lvl: 2, icon: '🪖', color: '#33691e', type: 'pants' },
+                { id: 'm_calca_jogger', name: 'Calça Jogger Preta', gender: 'M', lvl: 3, icon: '👖', color: '#212121', type: 'pants' },
+                { id: 'm_macacao_op', name: 'Macacão Operacional', gender: 'M', lvl: 4, icon: '🦺', color: '#e65100', type: 'jumpsuit' },
+                { id: 'm_calca_cyber', name: 'Calça Blindada SOC', gender: 'M', lvl: 6, icon: '🛡️', color: '#006064', type: 'pants' },
+                { id: 'm_macacao_cyber', name: 'Macacão LED Mestre', gender: 'M', lvl: 8, icon: '🤖', color: '#00e676', type: 'jumpsuit' },
+
+                { id: 'f_calca_jeans', name: 'Calça Jeans Feminina', gender: 'F', lvl: 1, icon: '👖', color: '#1976d2', type: 'pants' },
+                { id: 'f_saia_casual', name: 'Saia Casual', gender: 'F', lvl: 1, icon: '👗', color: '#ad1457', type: 'skirt' },
+                { id: 'f_vestido_basico', name: 'Vestido Simples', gender: 'F', lvl: 2, icon: '👗', color: '#8e24aa', type: 'dress' },
+                { id: 'f_calca_cargo', name: 'Calça Cargo Feminina', gender: 'F', lvl: 3, icon: '🪖', color: '#2e3b2f', type: 'pants' },
+                { id: 'f_macacao_op', name: 'Macacão Operacional', gender: 'F', lvl: 4, icon: '🦺', color: '#d84315', type: 'jumpsuit' },
+                { id: 'f_saia_neon', name: 'Saia Cyber Neon', gender: 'F', lvl: 5, icon: '⚡', color: '#ff0055', type: 'skirt' },
+                { id: 'f_vestido_gala', name: 'Vestido Gala Hacker', gender: 'F', lvl: 6, icon: '💎', color: '#00838f', type: 'dress' },
+                { id: 'f_macacao_cyber', name: 'Macacão LED Mestre', gender: 'F', lvl: 8, icon: '🤖', color: '#00e676', type: 'jumpsuit' }
+            ],
+            shoes: [
+                { id: 'm_chinelo', name: 'Chinelo Simples', gender: 'M', lvl: 1, icon: '🩴', color: '#78909c', style: 'flat' },
+                { id: 'm_sandalia_couro', name: 'Sandália Masculina', gender: 'M', lvl: 1, icon: '👞', color: '#5d4037', style: 'flat' },
+                { id: 'm_sapato_social', name: 'Sapato Clássico', gender: 'M', lvl: 2, icon: '👞', color: '#263238', style: 'shoe' },
+                { id: 'm_tenis_street', name: 'Tênis Casual', gender: 'M', lvl: 3, icon: '👟', color: '#1e88e5', style: 'shoe' },
+                { id: 'm_tenis_rgb', name: 'Sneaker Cyber RGB', gender: 'M', lvl: 5, icon: '⚡', color: '#00f3ff', style: 'boot' },
+                { id: 'm_coturno_tatico', name: 'Coturno Tático SOC', gender: 'M', lvl: 7, icon: '🥾', color: '#00ff66', style: 'boot' },
+
+                { id: 'f_chinelo', name: 'Chinelo Feminino', gender: 'F', lvl: 1, icon: '🩴', color: '#f48fb1', style: 'flat' },
+                { id: 'f_sandalia', name: 'Sandália Delicada', gender: 'F', lvl: 1, icon: '👡', color: '#ffcc80', style: 'flat' },
+                { id: 'f_sapato_scarpin', name: 'Sapato Feminino', gender: 'F', lvl: 2, icon: '🥿', color: '#880e4f', style: 'shoe' },
+                { id: 'f_salto_alto', name: 'Salto Alto Clássico', gender: 'F', lvl: 2, icon: '👠', color: '#d32f2f', style: 'heel' },
+                { id: 'f_tenis_rgb', name: 'Sneaker Cyber RGB', gender: 'F', lvl: 4, icon: '👟', color: '#00e5ff', style: 'shoe' },
+                { id: 'f_salto_neon', name: 'Salto Alto Neon', gender: 'F', lvl: 6, icon: '✨', color: '#ff00ff', style: 'heel' },
+                { id: 'f_bota_cyber', name: 'Bota Tática Cyber', gender: 'F', lvl: 7, icon: '🥾', color: '#00ff66', style: 'boot' }
+            ],
+            hat: [
+                { id: 'sem_chapeu', name: 'Sem Chapéu', gender: 'U', lvl: 1, icon: '💇', type: 'none' },
+                { id: 'bone_aba', name: 'Boné Street', gender: 'U', lvl: 1, icon: '🧢', color: '#1e88e5', type: 'cap' },
+                { id: 'toca_basica', name: 'Touca Discreta', gender: 'U', lvl: 2, icon: '🧶', color: '#37474f', type: 'beanie' },
+                { id: 'gorro_hacker', name: 'Gorro Black Hat', gender: 'U', lvl: 3, icon: '🎩', color: '#111111', type: 'pom_beanie' },
+                { id: 'bone_cyber', name: 'Boné Neon LED', gender: 'U', lvl: 5, icon: '⚡', color: '#00ff66', type: 'cap' },
+                { id: 'capuz_sombra', name: 'Touca Ninja Cyber', gender: 'U', lvl: 7, icon: '🥷', color: '#6a1b9a', type: 'beanie' }
+            ],
+            audio: [
+                { id: 'sem_fone', name: 'Sem Fone', gender: 'U', lvl: 1, icon: '🔇', type: 'none' },
+                { id: 'fone_basico', name: 'Fone Auricular', gender: 'U', lvl: 1, icon: '🎵', color: '#ffffff', type: 'earbuds' },
+                { id: 'fone_headset', name: 'Fone Headset', gender: 'U', lvl: 2, icon: '🎧', color: '#00e5ff', type: 'headset' },
+                { id: 'fone_soc', name: 'Headset SOC', gender: 'U', lvl: 4, icon: '📡', color: '#00ff66', type: 'headset' },
+                { id: 'fone_neural', name: 'Fone Implante', gender: 'U', lvl: 7, icon: '🧠', color: '#ff00ff', type: 'headset' }
+            ],
+            glasses: [
+                { id: 'sem_oculos', name: 'Sem Óculos', gender: 'U', lvl: 1, icon: '👀', type: 'none' },
+                { id: 'oculos_grau', name: 'Óculos de Leitura', gender: 'U', lvl: 1, icon: '👓', color: '#90caf9', type: 'glasses' },
+                { id: 'oculos_escuro', name: 'Óculos Matrix', gender: 'U', lvl: 2, icon: '🕶️', color: '#111111', type: 'sunglasses' },
+                { id: 'visor_ar', name: 'Óculos Visor AR', gender: 'U', lvl: 5, icon: '🥽', color: '#00ff66', type: 'visor' },
+                { id: 'visor_vr', name: 'Visor Cyber Lenda', gender: 'U', lvl: 8, icon: '🤖', color: '#00f3ff', type: 'visor' }
+            ],
+            jewelry: [
+                { id: 'sem_joia', name: 'Sem Acessórios', gender: 'U', lvl: 1, icon: '➖', brinco: false, piercing: false, cordao: false },
+                { id: 'brinco_simples', name: 'Brinco Discreto', gender: 'U', lvl: 1, icon: '✨', brinco: true, piercing: false, cordao: false },
+                { id: 'piercing_estilo', name: 'Piercing Nariz', gender: 'U', lvl: 2, icon: '⚡', brinco: false, piercing: true, cordao: false },
+                { id: 'cordao_prata', name: 'Cordão Prata', gender: 'U', lvl: 3, icon: '⛓️', brinco: false, piercing: false, cordao: '#cfd8dc' },
+                { id: 'kit_brinco_piercing', name: 'Brinco + Piercing', gender: 'U', lvl: 4, icon: '💎', brinco: true, piercing: true, cordao: false },
+                { id: 'cordao_cripto', name: 'Cordão Ouro', gender: 'U', lvl: 6, icon: '🏅', brinco: true, piercing: true, cordao: '#ffcc00' }
+            ],
+            bodyart: [
+                { id: 'sem_arte', name: 'Sem Arte/Relógio', gender: 'U', lvl: 1, icon: '➖', watch: false, tattoo: false },
+                { id: 'relogio_digital', name: 'Relógio Digital', gender: 'U', lvl: 1, icon: '⌚', watch: '#90a4ae', tattoo: false },
+                { id: 'tatuagem_tribal', name: 'Tatuagem Braço', gender: 'U', lvl: 2, icon: '🐉', watch: false, tattoo: '#263238' },
+                { id: 'smartwatch_sec', name: 'Smartwatch Hacker', gender: 'U', lvl: 3, icon: '📲', watch: '#00f3ff', tattoo: false },
+                { id: 'combo_tattoo_watch', name: 'Tattoo + Smartwatch', gender: 'U', lvl: 5, icon: '⚡', watch: '#00ff66', tattoo: '#00acc1' },
+                { id: 'cyber_tattoo_holo', name: 'Tattoo Neon + Holo', gender: 'U', lvl: 7, icon: '🔥', watch: '#ffcc00', tattoo: '#00ff66' }
+            ],
+            computer: [
+                { id: 'notebook_basico', name: 'Notebook Básico', gender: 'U', lvl: 1, icon: '💻', type: 'laptop_old' },
+                { id: 'notebook_linux', name: 'Notebook + Mouse', gender: 'U', lvl: 2, icon: '🐧', type: 'laptop_pro' },
+                { id: 'pc_gamer', name: 'PC + Monitor RGB', gender: 'U', lvl: 4, icon: '🖥️', type: 'pc_single' },
+                { id: 'setup_soc_dual', name: 'Setup 2 Telas + Mecânico', gender: 'U', lvl: 6, icon: '🛡️', type: 'pc_dual' },
+                { id: 'setup_quantico', name: 'Workstation 3 Telas + Holo', gender: 'U', lvl: 8, icon: '🚀', type: 'pc_triple' }
+            ],
+            chair: [
+                { id: 'banqueta_simples', name: 'Banqueta Simples', gender: 'U', lvl: 1, icon: '🪑', color: '#78909c', type: 'stool' },
+                { id: 'cadeira_escritorio', name: 'Cadeira Escritório', gender: 'U', lvl: 2, icon: '💺', color: '#37474f', type: 'office' },
+                { id: 'cadeira_gamer', name: 'Cadeira Gamer Pro', gender: 'U', lvl: 4, icon: '🎮', color: '#d32f2f', type: 'gamer' },
+                { id: 'cadeira_ergo_soc', name: 'Cadeira Ergonómica SOC', gender: 'U', lvl: 6, icon: '🛡️', color: '#00acc1', type: 'gamer' },
+                { id: 'trono_cyber', name: 'Trono Cyber Neon', gender: 'U', lvl: 8, icon: '👑', color: '#00ff66', type: 'throne' }
+            ]
+        };
+
+        // Patentes do Jogador
+        const ranks = [
+            { minXP: 0, title: "Recruta Digital" },
+            { minXP: 350, title: "Explorador de Terminal" },
+            { minXP: 700, title: "Analista de Pacotes" },
+            { minXP: 1100, title: "Guardião Criptográfico" },
+            { minXP: 1500, title: "Sentinela SOC N1 (Blue Team)" },
+            { minXP: 1950, title: "Operador Red Team" },
+            { minXP: 2400, title: "Especialista em Governança" },
+            { minXP: 2800, title: "Mestre / Lenda Cibernética" }
+        ];
+
+        // Lista de Conquistas & Insígnias de Especialista
+        const badgesList = [
+            { id: 'b1', icon: '🩸', title: 'First Blood', desc: 'Concluir o 1.º tópico de estudo', check: (s) => s.concluidos >= 1 },
+            { id: 'b2', icon: '🐧', title: 'Mestre do SO', desc: 'Completar Sistemas Operacionais', check: (s) => s.modulosCompletos.includes(2) },
+            { id: 'b3', icon: '🦈', title: 'Senhor da Rede', desc: 'Completar Redes de Computadores', check: (s) => s.modulosCompletos.includes(3) },
+            { id: 'b4', icon: '🔐', title: 'Cripto-Guardião', desc: 'Completar Criptografia Essencial', check: (s) => s.modulosCompletos.includes(4) },
+            { id: 'b5', icon: '🛡️', title: 'Defensor SOC', desc: 'Completar Blue Team & SOC', check: (s) => s.modulosCompletos.includes(5) },
+            { id: 'b6', icon: '⚔️', title: 'Hacker Ético', desc: 'Completar Red Team & Pentest', check: (s) => s.modulosCompletos.includes(6) },
+            { id: 'b7', icon: '📝', title: 'Escriba Cyber', desc: 'Fazer anotações em 3 módulos', check: (s) => s.notasCount >= 3 },
+            { id: 'b8', icon: '👑', title: 'Lenda Suprema', desc: 'Concluir 100% da Trilha', check: (s) => s.porcentagem === 100 }
+        ];
+
+        // Dados Completos dos Módulos da Trilha
         const trilhas = [
             {
                 id: 1, nivel: 1, titulo: "Fundamentos de Cibersegurança", tempo: "3-4 semanas", icon: "📚",
@@ -676,7 +1873,7 @@
                     "Superfície de ataque e vetor de ameaças",
                     "Engenharia social e técnicas de Phishing",
                     "Políticas de senhas robustas e MFA",
-                    "Introdução ao ciclo de vida de incidentes"
+                    "Como a Internet e os Sistemas funcionam (Noções de Hardware, Servidor e Cliente)"
                 ],
                 recursos: [
                     { nome: "Cartilha de Segurança para Internet (CERT.br)", url: "https://cartilha.cert.br" },
@@ -798,6 +1995,565 @@
             }
         ];
 
+        let userAvatarConfig = {
+            gender: 'masculino',
+            skin: '#e0ac69',
+            top: 'm_camiseta_basica',
+            bottom: 'm_calca_jeans',
+            shoes: 'm_chinelo',
+            hat: 'sem_chapeu',
+            audio: 'sem_fone',
+            glasses: 'sem_oculos',
+            jewelry: 'sem_joia',
+            bodyart: 'sem_arte',
+            computer: 'notebook_basico',
+            chair: 'banqueta_simples'
+        };
+
+        function getAvatarCategories() {
+            const isFem = userAvatarConfig.gender === 'feminino';
+            return [
+                { id: 'top', label: isFem ? '👚 Blusas, Casacos & Camisetas' : '👕 Camisetas & Casacos' },
+                { id: 'bottom', label: isFem ? '👗 Calças, Saias, Vestidos & Macacão' : '👖 Calças, Bermudas & Macacão' },
+                { id: 'shoes', label: isFem ? '👠 Sapato, Salto, Sandália & Botas' : '👟 Sapato, Tênis, Sandália & Botas' },
+                { id: 'hat', label: '🧢 Boné, Touca & Gorro' },
+                { id: 'audio', label: '🎧 Fones & Headsets' },
+                { id: 'glasses', label: '🕶️ Óculos & Visores' },
+                { id: 'jewelry', label: '💍 Brinco, Piercing & Cordão' },
+                { id: 'bodyart', label: '⌚ Relógios & Tatuagens' },
+                { id: 'computer', label: '💻 PC, Notebook & Periféricos' },
+                { id: 'chair', label: '🪑 Cadeiras & Setup' }
+            ];
+        }
+
+        function getFilteredItemsForCategory(catId) {
+            const gCode = userAvatarConfig.gender === 'feminino' ? 'F' : 'M';
+            const list = catalogItems[catId] || [];
+            return list.filter(item => item.gender === 'U' || item.gender === gCode);
+        }
+
+        function sanitizeAvatarByGender() {
+            ['top', 'bottom', 'shoes', 'hat', 'audio', 'glasses', 'jewelry', 'bodyart', 'computer', 'chair'].forEach(cat => {
+                const allowed = getFilteredItemsForCategory(cat);
+                const currentItem = allowed.find(i => i.id === userAvatarConfig[cat]);
+                if (!currentItem && allowed.length > 0) {
+                    userAvatarConfig[cat] = allowed[0].id;
+                }
+            });
+        }
+
+        function setStudioCamera(mode) {
+            studioCameraMode = mode;
+            document.getElementById('cam-all').classList.toggle('active', mode === 'all');
+            document.getElementById('cam-char').classList.toggle('active', mode === 'char');
+            document.getElementById('cam-setup').classList.toggle('active', mode === 'setup');
+            updateAvatarVisuals();
+        }
+
+        function checkCredentialRules(val) {
+            return {
+                upper: /[A-Z]/.test(val),
+                lower: /[a-z]/.test(val),
+                num: /[0-9]/.test(val),
+                spec: /[^A-Za-z0-9\s]/.test(val),
+                len: val.length >= 4 && val.length <= 8
+            };
+        }
+
+        function isCredentialValid(val) {
+            const r = checkCredentialRules(val);
+            return r.upper && r.lower && r.num && r.spec && r.len;
+        }
+
+        function updateRuleUI(containerId, val) {
+            const rules = checkCredentialRules(val);
+            const container = document.getElementById(containerId);
+            Object.keys(rules).forEach(key => {
+                const item = container.querySelector(`[data-rule="${key}"]`);
+                if (item) {
+                    item.classList.toggle('valid', rules[key]);
+                    const labelText = item.textContent.substring(2);
+                    item.textContent = (rules[key] ? '✔ ' : '▪ ') + labelText;
+                }
+            });
+        }
+
+        function validateInputs() {
+            const userVal = document.getElementById('auth-user').value;
+            const passVal = document.getElementById('auth-pass').value;
+            updateRuleUI('user-rules', userVal);
+            updateRuleUI('pass-rules', passVal);
+            document.getElementById('auth-error').textContent = '';
+        }
+
+        function switchAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            document.getElementById('btn-auth-action').textContent = mode === 'login' ? 'Iniciar Sessão' : 'Registrar & Montar Personagem';
+            document.getElementById('auth-error').textContent = '';
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('auth-pass');
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const user = document.getElementById('auth-user').value.trim();
+            const pass = document.getElementById('auth-pass').value;
+            const errorEl = document.getElementById('auth-error');
+
+            if (!isCredentialValid(user)) {
+                errorEl.textContent = '⚠️ O usuário deve ter Maiúscula, Minúscula, Número, Especial e até 8 caracteres.';
+                return;
+            }
+
+            if (!isCredentialValid(pass)) {
+                errorEl.textContent = '⚠️ A senha deve ter Maiúscula, Minúscula, Número, Especial e até 8 caracteres.';
+                return;
+            }
+
+            const usersDB = JSON.parse(localStorage.getItem('cyberQuestUsersDB_v3')) || {};
+
+            if (authMode === 'register') {
+                if (usersDB[user]) {
+                    errorEl.textContent = '⚠️ Este codinome de operador já está registrado.';
+                    return;
+                }
+                usersDB[user] = pass;
+                localStorage.setItem('cyberQuestUsersDB_v3', JSON.stringify(usersDB));
+                loginSuccess(user, '🎉 Conta criada! Escolha seu sexo e monte seu personagem!', true);
+            } else {
+                if (!usersDB[user] || usersDB[user] !== pass) {
+                    errorEl.textContent = '❌ Usuário não encontrado ou senha incorreta.';
+                    return;
+                }
+                loginSuccess(user, `🔓 Acesso autorizado! Bem-vindo(a), ${user}`, false);
+            }
+        }
+
+        function loginSuccess(username, toastMessage, isNewUser = false) {
+            currentUser = username;
+            sessionStorage.setItem('cyberQuestActiveUser_v3', username);
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('hud-username').textContent = username;
+            document.getElementById('certificado-operador').textContent = username;
+            loadAvatarConfig();
+            renderizarTrilha();
+            playCyberSound('levelup');
+            showToast(toastMessage);
+
+            if (isNewUser) {
+                setTimeout(() => openAvatarStudio(), 350);
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            sessionStorage.removeItem('cyberQuestActiveUser_v3');
+            document.getElementById('auth-form').reset();
+            validateInputs();
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        function getAvatarStorageKey() {
+            return currentUser ? `cyberAvatar_v3_${currentUser}` : 'cyberAvatar_v3_default';
+        }
+
+        function loadAvatarConfig() {
+            userAvatarConfig = {
+                gender: 'masculino',
+                skin: '#e0ac69',
+                top: 'm_camiseta_basica',
+                bottom: 'm_calca_jeans',
+                shoes: 'm_chinelo',
+                hat: 'sem_chapeu',
+                audio: 'sem_fone',
+                glasses: 'sem_oculos',
+                jewelry: 'sem_joia',
+                bodyart: 'sem_arte',
+                computer: 'notebook_basico',
+                chair: 'banqueta_simples'
+            };
+            try {
+                const saved = JSON.parse(localStorage.getItem(getAvatarStorageKey()));
+                if (saved) {
+                    userAvatarConfig = { ...userAvatarConfig, ...saved };
+                }
+            } catch (e) {}
+            sanitizeAvatarByGender();
+            updateAvatarVisuals();
+        }
+
+        function saveAvatarConfig() {
+            sanitizeAvatarByGender();
+            localStorage.setItem(getAvatarStorageKey(), JSON.stringify(userAvatarConfig));
+            updateAvatarVisuals();
+        }
+
+        function openAvatarStudio() {
+            sanitizeAvatarByGender();
+            document.getElementById('studio-lvl-indicator').textContent = `Seu Nível Atual: LVL ${currentLevel}`;
+            document.getElementById('btn-gen-m').classList.toggle('active', userAvatarConfig.gender === 'masculino');
+            document.getElementById('btn-gen-f').classList.toggle('active', userAvatarConfig.gender === 'feminino');
+            renderStudioTabs();
+            renderStudioItems();
+            updateAvatarVisuals();
+            document.getElementById('avatar-modal').style.display = 'flex';
+        }
+
+        function closeAvatarStudio() {
+            saveAvatarConfig();
+            document.getElementById('avatar-modal').style.display = 'none';
+            playCyberSound('xp');
+            showToast('👕 Visual do Personagem & Setup guardado!');
+        }
+
+        function setGender(g) {
+            userAvatarConfig.gender = g;
+            sanitizeAvatarByGender();
+            document.getElementById('btn-gen-m').classList.toggle('active', g === 'masculino');
+            document.getElementById('btn-gen-f').classList.toggle('active', g === 'feminino');
+            renderStudioTabs();
+            renderStudioItems();
+            saveAvatarConfig();
+        }
+
+        function setSkin(color, el) {
+            userAvatarConfig.skin = color;
+            document.querySelectorAll('.skin-dot').forEach(d => d.classList.remove('active'));
+            if (el) el.classList.add('active');
+            saveAvatarConfig();
+        }
+
+        function renderStudioTabs() {
+            const container = document.getElementById('studio-cat-tabs');
+            container.innerHTML = '';
+            const cats = getAvatarCategories();
+            cats.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `cat-tab ${activeStudioCategory === cat.id ? 'active' : ''}`;
+                btn.textContent = cat.label;
+                btn.onclick = () => {
+                    activeStudioCategory = cat.id;
+                    if (studioCameraMode !== 'all') {
+                        if (cat.id === 'computer' || cat.id === 'chair') {
+                            setStudioCamera('setup');
+                        } else {
+                            setStudioCamera('char');
+                        }
+                    }
+                    renderStudioTabs();
+                    renderStudioItems();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderStudioItems() {
+            const grid = document.getElementById('studio-items-grid');
+            grid.innerHTML = '';
+            const list = getFilteredItemsForCategory(activeStudioCategory);
+
+            list.forEach(item => {
+                const isUnlocked = currentLevel >= item.lvl;
+                const isSelected = userAvatarConfig[activeStudioCategory] === item.id;
+
+                const card = document.createElement('div');
+                card.className = `item-card ${isSelected ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                card.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.name}</div>
+                    <span class="item-lvl-tag">${isUnlocked ? `✔ Liberado (LVL ${item.lvl})` : `🔒 Requer LVL ${item.lvl}`}</span>
+                `;
+
+                card.onclick = () => {
+                    if (!isUnlocked) {
+                        showToast(`🔒 Avance nas missões até o Nível ${item.lvl} para desbloquear: ${item.name}!`);
+                        return;
+                    }
+                    userAvatarConfig[activeStudioCategory] = item.id;
+                    playCyberSound('xp');
+                    saveAvatarConfig();
+                    renderStudioItems();
+                };
+
+                grid.appendChild(card);
+            });
+            grid.scrollTop = 0;
+        }
+
+        function findItemObj(cat, id) {
+            const allowed = getFilteredItemsForCategory(cat);
+            return allowed.find(i => i.id === id) || allowed[0] || catalogItems[cat][0];
+        }
+
+        // Renderizador Gráfico SVG de Corpo Inteiro + Setup
+        function buildAvatarSVG(viewMode = 'all') {
+            const c = userAvatarConfig;
+            const topObj = findItemObj('top', c.top);
+            const botObj = findItemObj('bottom', c.bottom);
+            const shoeObj = findItemObj('shoes', c.shoes);
+            const hatObj = findItemObj('hat', c.hat);
+            const audioObj = findItemObj('audio', c.audio);
+            const glassObj = findItemObj('glasses', c.glasses);
+            const jewObj = findItemObj('jewelry', c.jewelry);
+            const artObj = findItemObj('bodyart', c.bodyart);
+            const compObj = findItemObj('computer', c.computer);
+            const chairObj = findItemObj('chair', c.chair);
+
+            const isFem = c.gender === 'feminino';
+
+            let viewBoxStr = "0 0 380 260";
+            if (viewMode === 'char') viewBoxStr = "15 5 170 250";
+            if (viewMode === 'setup') viewBoxStr = "185 20 190 235";
+
+            let chairSvg = '';
+            if (chairObj.type === 'stool') {
+                chairSvg = `<rect x="245" y="172" width="56" height="10" rx="4" fill="${chairObj.color}" />
+                            <line x1="258" y1="182" x2="252" y2="232" stroke="#78909c" stroke-width="5"/>
+                            <line x1="288" y1="182" x2="294" y2="232" stroke="#78909c" stroke-width="5"/>`;
+            } else if (chairObj.type === 'office') {
+                chairSvg = `<rect x="242" y="92" width="62" height="80" rx="10" fill="${chairObj.color}" stroke="#90a4ae" stroke-width="2"/>
+                            <rect x="238" y="170" width="70" height="10" rx="4" fill="#263238"/>
+                            <line x1="273" y1="180" x2="273" y2="232" stroke="#78909c" stroke-width="6"/>
+                            <line x1="250" y1="232" x2="296" y2="232" stroke="#78909c" stroke-width="4"/>`;
+            } else if (chairObj.type === 'gamer') {
+                chairSvg = `<polygon points="236,172 244,76 273,65 302,76 310,172" fill="#1a1a2e" stroke="${chairObj.color}" stroke-width="3"/>
+                            <line x1="250" y1="88" x2="250" y2="162" stroke="${chairObj.color}" stroke-width="3.5"/>
+                            <line x1="296" y1="88" x2="296" y2="162" stroke="${chairObj.color}" stroke-width="3.5"/>
+                            <line x1="273" y1="172" x2="273" y2="232" stroke="#546e7a" stroke-width="6"/>
+                            <line x1="248" y1="232" x2="298" y2="232" stroke="${chairObj.color}" stroke-width="4"/>`;
+            } else if (chairObj.type === 'throne') {
+                chairSvg = `<polygon points="228,175 236,60 273,45 310,60 318,175" fill="#050510" stroke="#00ff66" stroke-width="3"/>
+                            <circle cx="273" cy="64" r="9" fill="#00f3ff"/>
+                            <line x1="234" y1="74" x2="246" y2="166" stroke="#00f3ff" stroke-width="3"/>
+                            <line x1="312" y1="74" x2="300" y2="166" stroke="#00f3ff" stroke-width="3"/>
+                            <line x1="273" y1="175" x2="273" y2="232" stroke="#00ff66" stroke-width="7"/>
+                            <line x1="244" y1="232" x2="302" y2="232" stroke="#00f3ff" stroke-width="5"/>`;
+            }
+
+            let deskSvg = `
+                <rect x="195" y="162" width="170" height="8" rx="3" fill="#1e293b" stroke="#00f3ff" stroke-width="1.5"/>
+                <rect x="205" y="170" width="9" height="65" fill="#0f172a"/>
+                <rect x="346" y="170" width="9" height="65" fill="#0f172a"/>
+            `;
+
+            if (compObj.type === 'laptop_old') {
+                deskSvg += `<polygon points="248,162 298,162 293,130 253,130" fill="#546e7a" stroke="#cfd8dc" stroke-width="1.5"/>
+                            <circle cx="273" cy="146" r="3.5" fill="#fff"/>`;
+            } else if (compObj.type === 'laptop_pro') {
+                deskSvg += `<polygon points="244,162 302,162 297,126 249,126" fill="#111" stroke="#00ff66" stroke-width="2"/>
+                            <text x="266" y="150" font-size="12">🐧</text>
+                            <rect x="312" y="156" width="12" height="6" rx="3" fill="#00f3ff"/>`;
+            } else if (compObj.type === 'pc_single') {
+                deskSvg += `<rect x="202" y="114" width="26" height="48" rx="3" fill="#111" stroke="#ff0055" stroke-width="2"/>
+                            <line x1="207" y1="122" x2="223" y2="154" stroke="#00ff66" stroke-width="2"/>
+                            <rect x="242" y="116" width="62" height="40" rx="4" fill="#0d1117" stroke="#00f3ff" stroke-width="2"/>
+                            <rect x="268" y="156" width="10" height="6" fill="#546e7a"/>
+                            <rect x="312" y="156" width="24" height="6" rx="2" fill="#00ff66"/>`;
+            } else if (compObj.type === 'pc_dual') {
+                deskSvg += `<rect x="198" y="112" width="26" height="50" rx="3" fill="#0a0a14" stroke="#00ff66" stroke-width="2"/>
+                            <rect x="230" y="118" width="52" height="38" rx="3" fill="#050b14" stroke="#00f3ff" stroke-width="2"/>
+                            <rect x="286" y="118" width="52" height="38" rx="3" fill="#050b14" stroke="#00ff66" stroke-width="2"/>
+                            <rect x="342" y="156" width="18" height="6" rx="2" fill="#ffcc00"/>`;
+            } else if (compObj.type === 'pc_triple') {
+                deskSvg += `<rect x="196" y="110" width="26" height="52" rx="3" fill="#050510" stroke="#ffcc00" stroke-width="2"/>
+                            <rect x="226" y="118" width="42" height="36" rx="2" fill="#001a1a" stroke="#00f3ff" stroke-width="1.8"/>
+                            <rect x="271" y="114" width="46" height="40" rx="2" fill="#001a1a" stroke="#00ff66" stroke-width="2"/>
+                            <rect x="320" y="118" width="42" height="36" rx="2" fill="#001a1a" stroke="#00f3ff" stroke-width="1.8"/>
+                            <text x="283" y="138" font-size="10" fill="#00ff66" font-family="monospace">SOC</text>`;
+            }
+
+            const platformSvg = `<ellipse cx="95" cy="234" rx="46" ry="9" fill="rgba(0, 243, 255, 0.15)" stroke="#00f3ff" stroke-width="1.5"/>`;
+
+            let legsSvg = `
+                <rect x="77" y="164" width="14" height="56" fill="${c.skin}" />
+                <rect x="99" y="164" width="14" height="56" fill="${c.skin}" />
+            `;
+
+            if (botObj.type === 'pants') {
+                legsSvg += `<rect x="75" y="162" width="18" height="54" rx="2" fill="${botObj.color}" />
+                            <rect x="97" y="162" width="18" height="54" rx="2" fill="${botObj.color}" />`;
+            } else if (botObj.type === 'shorts') {
+                legsSvg += `<rect x="75" y="162" width="18" height="28" rx="2" fill="${botObj.color}" />
+                            <rect x="97" y="162" width="18" height="28" rx="2" fill="${botObj.color}" />`;
+            } else if (botObj.type === 'skirt') {
+                legsSvg += `<polygon points="70,162 120,162 128,194 62,194" fill="${botObj.color}" />`;
+            }
+
+            let shoesSvg = '';
+            if (shoeObj.style === 'flat') {
+                shoesSvg = `<rect x="73" y="218" width="20" height="7" rx="3" fill="${shoeObj.color}" />
+                            <rect x="97" y="218" width="20" height="7" rx="3" fill="${shoeObj.color}" />`;
+            } else if (shoeObj.style === 'heel') {
+                shoesSvg = `<polygon points="73,216 93,216 93,225 88,225 88,231 84,231 84,223 73,223" fill="${shoeObj.color}" />
+                            <polygon points="97,216 117,216 117,225 112,225 112,231 108,231 108,223 97,223" fill="${shoeObj.color}" />`;
+            } else if (shoeObj.style === 'boot') {
+                shoesSvg = `<rect x="73" y="204" width="20" height="22" rx="4" fill="${shoeObj.color}" stroke="#111" stroke-width="1"/>
+                            <rect x="97" y="204" width="20" height="22" rx="4" fill="${shoeObj.color}" stroke="#111" stroke-width="1"/>`;
+            } else {
+                shoesSvg = `<rect x="72" y="214" width="21" height="11" rx="4" fill="${shoeObj.color}" />
+                            <rect x="97" y="214" width="21" height="11" rx="4" fill="${shoeObj.color}" />`;
+            }
+
+            let armsSvg = `
+                <rect x="51" y="106" width="14" height="52" rx="6" fill="${c.skin}" />
+                <rect x="125" y="106" width="14" height="52" rx="6" fill="${c.skin}" />
+            `;
+
+            if (artObj.tattoo) {
+                armsSvg += `<path d="M55,116 Q61,126 55,136 Q60,144 57,150" stroke="${artObj.tattoo}" stroke-width="3" fill="none"/>
+                            <path d="M131,116 Q127,126 133,136" stroke="${artObj.tattoo}" stroke-width="3" fill="none"/>`;
+            }
+
+            if (artObj.watch) {
+                armsSvg += `<rect x="49" y="144" width="18" height="7" rx="2" fill="${artObj.watch}" />`;
+            }
+
+            let torsoColor = topObj.color;
+            let torsoSvg = '';
+            if (botObj.type === 'dress') {
+                torsoSvg = `<polygon points="68,104 122,104 132,198 58,198" fill="${botObj.color}" />`;
+            } else if (botObj.type === 'jumpsuit') {
+                torsoSvg = `<rect x="65" y="104" width="60" height="62" rx="6" fill="${botObj.color}" />
+                            <rect x="75" y="162" width="18" height="54" rx="2" fill="${botObj.color}" />
+                            <rect x="97" y="162" width="18" height="54" rx="2" fill="${botObj.color}" />`;
+            } else {
+                torsoSvg = `<rect x="65" y="104" width="60" height="60" rx="${isFem ? '13' : '6'}" fill="${torsoColor}" />`;
+            }
+
+            if (topObj.type === 'jacket' || topObj.type === 'coat' || topObj.type === 'hoodie') {
+                torsoSvg += `<rect x="50" y="104" width="16" height="45" rx="5" fill="${topObj.color}" />
+                             <rect x="124" y="104" width="16" height="45" rx="5" fill="${topObj.color}" />
+                             <line x1="95" y1="104" x2="95" y2="164" stroke="#00f3ff" stroke-width="2"/>`;
+            }
+
+            if (topObj.type === 'tshirt_logo') {
+                torsoSvg += `<circle cx="95" cy="132" r="10" fill="#ffcc00" />
+                             <text x="90" y="136" font-size="11" fill="#000" font-weight="bold">🐧</text>`;
+            }
+
+            let cordaoSvg = '';
+            if (jewObj.cordao) {
+                cordaoSvg = `<path d="M81,104 Q95,128 109,104" stroke="${jewObj.cordao}" stroke-width="3" fill="none"/>
+                             <circle cx="95" cy="120" r="4" fill="${jewObj.cordao}"/>`;
+            }
+
+            let hairSvg = '';
+            if (isFem) {
+                hairSvg = `<path d="M63,67 Q56,112 67,126 L73,104 Z" fill="#2c1b18"/>
+                           <path d="M127,67 Q134,112 123,126 L117,104 Z" fill="#2c1b18"/>
+                           <path d="M65,68 Q95,42 125,68 Z" fill="#2c1b18"/>`;
+            } else {
+                hairSvg = `<path d="M67,70 Q95,46 123,70 Z" fill="#1a1a1a"/>`;
+            }
+
+            let headSvg = `
+                <rect x="87" y="92" width="16" height="15" fill="${c.skin}" />
+                <circle cx="95" cy="74" r="26" fill="${c.skin}" />
+                <circle cx="86" cy="72" r="3" fill="#111" />
+                <circle cx="104" cy="72" r="3" fill="#111" />
+                <path d="M87,85 Q95,91 103,85" stroke="${isFem ? '#d81b60' : '#333'}" stroke-width="2.5" fill="none" />
+            `;
+
+            let faceJewelrySvg = '';
+            if (jewObj.brinco) {
+                faceJewelrySvg += `<circle cx="67" cy="80" r="3.5" fill="#00f3ff"/>
+                                   <circle cx="123" cy="80" r="3.5" fill="#00f3ff"/>`;
+            }
+            if (jewObj.piercing) {
+                faceJewelrySvg += `<circle cx="98" cy="78" r="2" fill="#ffcc00"/>
+                                   <circle cx="81" cy="64" r="2" fill="#00ff66"/>`;
+            }
+
+            let glassesSvg = '';
+            if (glassObj.type === 'glasses') {
+                glassesSvg = `<rect x="77" y="66" width="15" height="11" rx="2" fill="none" stroke="${glassObj.color}" stroke-width="2"/>
+                              <rect x="98" y="66" width="15" height="11" rx="2" fill="none" stroke="${glassObj.color}" stroke-width="2"/>
+                              <line x1="92" y1="71" x2="98" y2="71" stroke="${glassObj.color}" stroke-width="2"/>`;
+            } else if (glassObj.type === 'sunglasses') {
+                glassesSvg = `<polygon points="75,66 93,66 91,77 77,77" fill="#050505" stroke="#00ff66" stroke-width="1.5"/>
+                              <polygon points="97,66 115,66 113,77 99,77" fill="#050505" stroke="#00ff66" stroke-width="1.5"/>
+                              <line x1="93" y1="68" x2="97" y2="68" stroke="#00ff66" stroke-width="2"/>`;
+            } else if (glassObj.type === 'visor') {
+                glassesSvg = `<rect x="71" y="64" width="48" height="14" rx="6" fill="${glassObj.color}" fill-opacity="0.75" stroke="#fff" stroke-width="1.5"/>
+                              <line x1="77" y1="71" x2="113" y2="71" stroke="#fff" stroke-width="1.5"/>`;
+            }
+
+            let hatSvg = '';
+            if (hatObj.type === 'cap') {
+                hatSvg = `<path d="M67,60 Q95,37 123,60 Z" fill="${hatObj.color}"/>
+                          <rect x="90" y="55" width="42" height="6" rx="3" fill="${hatObj.color}"/>`;
+            } else if (hatObj.type === 'beanie') {
+                hatSvg = `<path d="M66,64 Q95,32 124,64 Z" fill="${hatObj.color}"/>
+                          <rect x="65" y="58" width="60" height="7" rx="3" fill="#222"/>`;
+            } else if (hatObj.type === 'pom_beanie') {
+                hatSvg = `<circle cx="95" cy="38" r="7" fill="#00f3ff"/>
+                          <path d="M66,64 Q95,34 124,64 Z" fill="${hatObj.color}"/>
+                          <rect x="65" y="58" width="60" height="7" rx="3" fill="#00ff66"/>`;
+            }
+
+            let audioSvg = '';
+            if (audioObj.type === 'earbuds') {
+                audioSvg = `<circle cx="69" cy="76" r="3" fill="#fff"/>
+                            <circle cx="121" cy="76" r="3" fill="#fff"/>`;
+            } else if (audioObj.type === 'headset') {
+                audioSvg = `<path d="M65,76 Q95,27 125,76" stroke="${audioObj.color}" stroke-width="4" fill="none"/>
+                            <rect x="60" y="66" width="9" height="18" rx="4" fill="${audioObj.color}"/>
+                            <rect x="121" y="66" width="9" height="18" rx="4" fill="${audioObj.color}"/>
+                            <line x1="65" y1="82" x2="83" y2="88" stroke="${audioObj.color}" stroke-width="2.5"/>`;
+            }
+
+            return `
+            <svg viewBox="${viewBoxStr}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                <line x1="0" y1="234" x2="380" y2="234" stroke="rgba(0,243,255,0.25)" stroke-width="1.5"/>
+                ${chairSvg}
+                ${deskSvg}
+                ${platformSvg}
+                ${legsSvg}
+                ${shoesSvg}
+                ${armsSvg}
+                ${torsoSvg}
+                ${cordaoSvg}
+                ${hairSvg}
+                ${headSvg}
+                ${faceJewelrySvg}
+                ${glassesSvg}
+                ${hatSvg}
+                ${audioSvg}
+            </svg>`;
+        }
+
+        function updateAvatarVisuals() {
+            const hudContainer = document.getElementById('hud-svg-container');
+            const studioContainer = document.getElementById('studio-svg-container');
+            if (hudContainer) hudContainer.innerHTML = buildAvatarSVG('all');
+            if (studioContainer) studioContainer.innerHTML = buildAvatarSVG(studioCameraMode);
+
+            const topObj = findItemObj('top', userAvatarConfig.top);
+            const botObj = findItemObj('bottom', userAvatarConfig.bottom);
+            const shoeObj = findItemObj('shoes', userAvatarConfig.shoes);
+            const compObj = findItemObj('computer', userAvatarConfig.computer);
+            const summaryEl = document.getElementById('equipped-summary-text');
+            if (summaryEl) {
+                summaryEl.textContent = `👕 ${topObj.name} | 👖 ${botObj.name} | 👟 ${shoeObj.name} | 💻 ${compObj.name}`;
+            }
+        }
+
+        function getStorageKeyProg() {
+            return currentUser ? `progressoCyberPro_v3_${currentUser}` : 'progressoCyberPro_v3';
+        }
+
+        function getStorageKeyNota(id) {
+            return currentUser ? `notaCyber_v3_${currentUser}_${id}` : `notaCyber_v3_${id}`;
+        }
+
         function renderizarTrilha() {
             const container = document.getElementById('conteudo');
             container.innerHTML = '';
@@ -805,11 +2561,15 @@
             trilhas.forEach(trilha => {
                 const card = document.createElement('div');
                 card.className = `card level-${trilha.nivel}`;
+                card.id = `quest-card-${trilha.id}`;
                 
                 let topicosHtml = trilha.topicos.map((topico, idx) => `
                     <li>
-                        <input type="checkbox" data-trilha="${trilha.id}" data-topico="${idx}" onchange="atualizarProgresso()">
-                        <span>${topico}</span>
+                        <label class="topic-label">
+                            <input type="checkbox" data-trilha="${trilha.id}" data-topico="${idx}" onchange="onCheckTopic(this)">
+                            <span>${topico}</span>
+                        </label>
+                        <span class="xp-gain-tag">+50 XP</span>
                     </li>
                 `).join('');
 
@@ -819,6 +2579,10 @@
 
                 card.innerHTML = `
                     <div>
+                        <div class="quest-status-bar">
+                            <span class="quest-tag" id="quest-tag-${trilha.id}">⚔️ Missão Ativa</span>
+                            <span class="xp-reward">🏆 Bônus: +100 XP</span>
+                        </div>
                         <div class="card-header">
                             <div class="icon">${trilha.icon}</div>
                             <div>
@@ -827,21 +2591,24 @@
                             </div>
                         </div>
                         <p>${trilha.descricao}</p>
+                        <div class="module-mini-progress">
+                            <div class="module-mini-fill" id="mini-fill-${trilha.id}"></div>
+                        </div>
                     </div>
                     <div>
-                        <button class="btn-expandir" onclick="toggleDetalhes(this)">Ver Conteúdo & Anotações</button>
+                        <button class="btn-expandir" onclick="toggleDetalhes(this)">Abrir Missão & Diário</button>
                         <div class="detalhes">
                             <div class="card-topicos">
-                                <h4>Tópicos do Módulo (Marque conforme estudar):</h4>
+                                <h4>Objetivos da Missão (Marque para ganhar XP e liberar itens):</h4>
                                 <ul>${topicosHtml}</ul>
                             </div>
                             <div class="card-recursos">
-                                <h4>Recursos & Ferramentas Recomendadas:</h4>
+                                <h4>Equipamento & Ferramentas Recomendadas:</h4>
                                 <ul>${recursosHtml}</ul>
                             </div>
                             <div class="bloco-notas">
-                                <h4>📝 Suas Anotações & Comandos:</h4>
-                                <textarea id="nota-${trilha.id}" placeholder="Escreva suas anotações aqui (salva automaticamente)..." oninput="salvarNota(${trilha.id})"></textarea>
+                                <h4>📝 Diário de Bordo & Comandos:</h4>
+                                <textarea id="nota-${trilha.id}" placeholder="Registre os seus comandos e notas aqui..." oninput="salvarNota(${trilha.id})"></textarea>
                             </div>
                         </div>
                     </div>
@@ -851,13 +2618,21 @@
             carregarDadosSalvos();
         }
 
+        function onCheckTopic(checkbox) {
+            if (checkbox.checked) {
+                playCyberSound('xp');
+                showToast('⚡ +50 XP | +10 Créditos Cyber!');
+            }
+            atualizarProgresso(true);
+        }
+
         function toggleDetalhes(button) {
             const detalhes = button.nextElementSibling;
             detalhes.classList.toggle('ativo');
-            button.textContent = detalhes.classList.contains('ativo') ? 'Ocultar Conteúdo' : 'Ver Conteúdo & Anotações';
+            button.textContent = detalhes.classList.contains('ativo') ? 'Ocultar Missão' : 'Abrir Missão & Diário';
         }
 
-        function atualizarProgresso() {
+        function atualizarProgresso(isUserAction = false) {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             let total = checkboxes.length;
             let concluidos = 0;
@@ -873,28 +2648,115 @@
                 }
             });
 
-            localStorage.setItem('progressoCyberPro', JSON.stringify(estadoProgresso));
+            localStorage.setItem(getStorageKeyProg(), JSON.stringify(estadoProgresso));
+
+            let modulosCompletos = [];
+            trilhas.forEach(trilha => {
+                const cbsModulo = document.querySelectorAll(`input[data-trilha="${trilha.id}"]`);
+                let marcadosModulo = 0;
+                cbsModulo.forEach(c => { if (c.checked) marcadosModulo++; });
+
+                const percModulo = cbsModulo.length > 0 ? Math.round((marcadosModulo / cbsModulo.length) * 100) : 0;
+                const miniFill = document.getElementById(`mini-fill-${trilha.id}`);
+                if (miniFill) miniFill.style.width = `${percModulo}%`;
+
+                const cardEl = document.getElementById(`quest-card-${trilha.id}`);
+                const tagEl = document.getElementById(`quest-tag-${trilha.id}`);
+
+                if (cardEl && tagEl) {
+                    if (percModulo === 100) {
+                        modulosCompletos.push(trilha.id);
+                        cardEl.classList.add('quest-completed');
+                        tagEl.innerHTML = '✅ Missão Concluída';
+                    } else {
+                        cardEl.classList.remove('quest-completed');
+                        tagEl.innerHTML = `⚔️ Em Progresso (${percModulo}%)`;
+                    }
+                }
+            });
+
+            const totalXP = (concluidos * 50) + (modulosCompletos.length * 100);
+            const maxXP = (total * 50) + (trilhas.length * 100);
+            const coins = (concluidos * 10) + (modulosCompletos.length * 50);
+
+            let calcLevel = 1;
+            let currentRank = ranks[0];
+            let nextRankXP = maxXP;
+
+            for (let i = 0; i < ranks.length; i++) {
+                if (totalXP >= ranks[i].minXP) {
+                    calcLevel = i + 1;
+                    currentRank = ranks[i];
+                    nextRankXP = (i + 1 < ranks.length) ? ranks[i + 1].minXP : maxXP;
+                }
+            }
+
+            currentLevel = calcLevel;
+
+            if (isUserAction && currentLevel > previousLevel) {
+                playCyberSound('levelup');
+                showToast(`🎉 NÍVEL ${currentLevel} ALCANÇADO! Novas roupas e itens de Setup liberados no Estúdio!`);
+            }
+            previousLevel = currentLevel;
+
+            document.getElementById('player-lvl-badge').textContent = `LVL ${currentLevel}`;
+            document.getElementById('player-rank-title').textContent = currentRank.title;
+            document.getElementById('xp-text').textContent = `${totalXP} / ${maxXP} XP`;
+            document.getElementById('next-rank-text').textContent = totalXP >= maxXP ? 'Nível Máximo! Todos os Itens Desbloqueados!' : `Próximo Nível (Novos Itens): ${nextRankXP} XP`;
+            document.getElementById('xp-bar-fill').style.width = `${Math.min(100, Math.round((totalXP / maxXP) * 100))}%`;
+            document.getElementById('stat-coins').textContent = `🪙 ${coins}`;
+            document.getElementById('stat-quests').textContent = `${modulosCompletos.length}/${trilhas.length}`;
+
+            let notasCount = 0;
+            trilhas.forEach(t => {
+                const val = localStorage.getItem(getStorageKeyNota(t.id));
+                if (val && val.trim().length > 0) notasCount++;
+            });
 
             const porcentagem = total > 0 ? Math.round((concluidos / total) * 100) : 0;
             document.getElementById('barraProgresso').style.width = `${porcentagem}%`;
             document.getElementById('progressoTexto').textContent = `${porcentagem}%`;
 
-            const btnCertificado = document.getElementById('btn-certificado');
-            if (porcentagem === 100) {
-                btnCertificado.style.display = 'inline-block';
-            } else {
-                btnCertificado.style.display = 'none';
+            // Renderizar Galeria de Conquistas & Insígnias
+            const statsObj = { concluidos, modulosCompletos, notasCount, porcentagem };
+            const badgesContainer = document.getElementById('badges-container');
+            if (badgesContainer) {
+                badgesContainer.innerHTML = '';
+                let unlockedCount = 0;
+
+                badgesList.forEach(b => {
+                    const isUnlocked = b.check(statsObj);
+                    if (isUnlocked) unlockedCount++;
+                    const div = document.createElement('div');
+                    div.className = `badge-item ${isUnlocked ? 'unlocked' : ''}`;
+                    div.innerHTML = `
+                        <span class="badge-icon">${b.icon}</span>
+                        <span class="badge-title">${b.title}</span>
+                        <span class="badge-desc">${b.desc}</span>
+                        <span class="badge-status-pill">${isUnlocked ? '🔓 Conquistada!' : '🔒 Bloqueada'}</span>
+                    `;
+                    badgesContainer.appendChild(div);
+                });
+
+                document.getElementById('stat-badges').textContent = `${unlockedCount}/${badgesList.length}`;
             }
+
+            const btnCertificado = document.getElementById('btn-certificado');
+            if (btnCertificado) {
+                btnCertificado.style.display = (porcentagem === 100) ? 'inline-block' : 'none';
+            }
+            updateAvatarVisuals();
         }
 
         function salvarNota(idTrilha) {
             const texto = document.getElementById(`nota-${idTrilha}`).value;
-            localStorage.setItem(`notaCyber_${idTrilha}`, texto);
+            localStorage.setItem(getStorageKeyNota(idTrilha), texto);
+            atualizarProgresso(false);
         }
 
         function carregarDadosSalvos() {
             try {
-                const salvoProgresso = JSON.parse(localStorage.getItem('progressoCyberPro'));
+                const salvoProgresso = JSON.parse(localStorage.getItem(getStorageKeyProg()));
                 if (salvoProgresso) {
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(cb => {
@@ -904,62 +2766,17 @@
                 }
 
                 trilhas.forEach(t => {
-                    const notaSalva = localStorage.getItem(`notaCyber_${t.id}`);
+                    const notaSalva = localStorage.getItem(getStorageKeyNota(t.id));
                     if (notaSalva) {
                         const textarea = document.getElementById(`nota-${t.id}`);
                         if (textarea) textarea.value = notaSalva;
                     }
                 });
 
-                atualizarProgresso();
+                atualizarProgresso(false);
             } catch (e) {
-                console.error("Erro ao carregar dados salvos:", e);
+                console.error("Erro ao carregar dados guardados:", e);
             }
-        }
-
-        function exportarBackup() {
-            let dados = { progresso: {}, notas: {} };
-            try {
-                dados.progresso = JSON.parse(localStorage.getItem('progressoCyberPro')) || {};
-                trilhas.forEach(t => {
-                    dados.notas[t.id] = localStorage.getItem(`notaCyber_${t.id}`) || '';
-                });
-
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", "backup_trilha_ciberseguranca.json");
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-            } catch (e) {
-                alert("Erro ao exportar backup.");
-            }
-        }
-
-        function importarBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const dados = JSON.parse(e.target.result);
-                    if (dados.progresso) {
-                        localStorage.setItem('progressoCyberPro', JSON.stringify(dados.progresso));
-                    }
-                    if (dados.notas) {
-                        Object.keys(dados.notas).forEach(id => {
-                            localStorage.setItem(`notaCyber_${id}`, dados.notas[id]);
-                        });
-                    }
-                    renderizarTrilha();
-                    alert("Backup importado com sucesso!");
-                } catch (err) {
-                    alert("Arquivo de backup inválido.");
-                }
-            };
-            reader.readAsText(file);
         }
 
         function abrirCertificado() {
@@ -969,7 +2786,12 @@
             document.getElementById('modalCertificado').style.display = 'none';
         }
 
-        window.onload = renderizarTrilha;
+        window.onload = function() {
+            const activeUser = sessionStorage.getItem('cyberQuestActiveUser_v3');
+            if (activeUser) {
+                loginSuccess(activeUser, `🔓 Sessão restaurada: ${activeUser}`, false);
+            }
+        };
     </script>
 </body>
 </html>
