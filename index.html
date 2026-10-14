@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trilha Completa de Cibersegurança</title>
+    <style>
+        :root {
+            --primary: #00f3ff;
+            --accent: #00ff66;
+            --bg-card: rgba(12, 12, 22, 0.92);
+            --border-color: rgba(0, 243, 255, 0.3);
+        }
+
+        [data-theme="matrix"] {
+            --primary: #00ff33;
+            --accent: #00ffff;
+            --border-color: rgba(0, 255, 51, 0.3);
+        }
+
+        [data-theme="purple"] {
+            --primary: #bd00ff;
+            --accent: #00f3ff;
+            --border-color: rgba(189, 0, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Canvas do Efeito Matrix no Fundo */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-selector span {
+            font-size: 0.9em;
+            color: #b0c4de;
+            font-weight: 600;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 10px var(--primary);
+            font-weight: bold;
+        }
+
+        .backup-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-backup {
+            background: rgba(0, 255, 102, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-backup:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 35px;
+            padding: 25px 0;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.15em;
+            color: #b0c4de;
+        }
+
+        .trilha-visual {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .etapa {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .numero-etapa {
+            width: 50px;
+            height: 50px;
+            background: #050508;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary);
+            margin-bottom: 8px;
+            box-shadow: 0 0 12px var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .numero-etapa:hover {
+            transform: scale(1.15);
+            background: var(--primary);
+            color: #000;
+        }
+
+        .nome-etapa {
+            color: #fff;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .seta {
+            color: var(--primary);
+            font-size: 1.6em;
+            margin: 0 2px;
+        }
+
+        @media (max-width: 768px) {
+            .trilha-visual { flex-direction: column; }
+            .seta { transform: rotate(90deg); margin: 5px 0; }
+        }
+
+        .conteudo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 5px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 40px var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            margin-right: 15px;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary);
+            flex-shrink: 0;
+        }
+
+        .card h3 {
+            font-size: 1.25em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .tempo {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #b0bec5;
+            line-height: 1.6;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+        }
+
+        .btn-expandir {
+            background: linear-gradient(135deg, var(--primary) 0%, #0066ff 100%);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            box-shadow: 0 0 12px var(--border-color);
+        }
+
+        .btn-expandir:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            color: #fff;
+        }
+
+        .detalhes {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .detalhes.ativo { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-topicos h4, .card-recursos h4, .bloco-notas h4 {
+            color: var(--primary);
+            font-size: 0.92em;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        .card-topicos ul, .card-recursos ul { list-style: none; }
+
+        .card-topicos li {
+            color: #cfd8dc;
+            font-size: 0.88em;
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-topicos input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .card-recursos li {
+            font-size: 0.88em;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .card-recursos a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .card-recursos a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .bloco-notas {
+            margin-top: 15px;
+        }
+
+        .bloco-notas textarea {
+            width: 100%;
+            height: 75px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 8px;
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.85em;
+            resize: vertical;
+        }
+
+        .bloco-notas textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--border-color);
+        }
+
+        .progresso {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            border: 1px solid var(--accent);
+        }
+
+        .progresso h3 {
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .barra-progresso {
+            width: 100%;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .progresso-preenchido {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .progresso-container-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .progresso-texto {
+            color: var(--accent);
+            font-size: 1.05em;
+            font-weight: 700;
+        }
+
+        #btn-certificado {
+            background: linear-gradient(135deg, #00ff66 0%, #00b34d 100%);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 0 15px var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #0a0a14;
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 255, 102, 0.4);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            color: var(--accent);
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .modal-content p {
+            color: #cfd8dc;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .certificado-nome {
+            font-size: 1.8em;
+            color: var(--primary);
+            font-weight: bold;
+            margin: 15px 0;
+            border-bottom: 2px dashed var(--primary);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .btn-fechar-modal {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            color: #fff;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 1.05em;
+            font-weight: 600;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 0 8px var(--border-color);
+        }
+    </style>
+</head>
+<body data-theme="ciano">
+    <!-- Canvas Matrix Rain Background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="container">
+        <div class="top-bar">
+            <div class="theme-selector">
+                <span>Tema:</span>
+                <button class="theme-btn active" onclick="setTheme('ciano', this)">Ciano</button>
+                <button class="theme-btn" onclick="setTheme('matrix', this)">Matrix</button>
+                <button class="theme-btn" onclick="setTheme('purple', this)">Roxo</button>
+            </div>
+            <div class="backup-controls">
+                <button class="btn-backup" onclick="exportarBackup()">📥 Exportar</button>
+                <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar</button>
+                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarBackup(event)">
+            </div>
+        </div>
+
+        <header>
+            <h1>🔒 Trilha de Cibersegurança</h1>
+            <p>Do Zero ao Profissional: Fundamentos, Redes, Blue team, Red team, e Governança</p>
+        </header>
+
+        <div class="trilha-visual">
+            <div class="etapa">
+                <div class="numero-etapa">1</div>
+                <div class="nome-etapa">Fundamentos & SO</div>
+            </div>
+            <div class="seta">→</div>
+            <div class="etapa">
+                <div class="numero-etapa">2</div>
+                <div class="nome-etapa">Redes & Cripto</div>
+            </div>
+            <div class="seta">→</div>
+            <div class="etapa">
+                <div class="numero-etapa">3</div>
+                <div class="nome-etapa">Blue Team & SOC</div>
+            </div>
+            <div class="seta">→</div>
+            <div class="etapa">
+                <div class="numero-etapa">4</div>
+                <div class="nome-etapa">Red Team & Governança</div>
+            </div>
+            <div class="seta">→</div>
+            <div class="etapa">
+                <div class="numero-etapa">5</div>
+                <div class="nome-etapa">Carreira & Mercado</div>
+            </div>
+        </div>
+
+        <div class="conteudo" id="conteudo"></div>
+
+        <div class="progresso">
+            <h3>📊 Seu Progresso na Trilha</h3>
+            <div class="barra-progresso">
+                <div class="progresso-preenchido" id="barraProgresso"></div>
+            </div>
+            <div class="progresso-container-info">
+                <div class="progresso-texto">
+                    <span id="progressoTexto">0%</span> concluído - Continue firme nos estudos!
+                </div>
+                <button id="btn-certificado" onclick="abrirCertificado()">🏆 Gerar Certificado</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Certificado -->
+    <div class="modal" id="modalCertificado">
+        <div class="modal-content">
+            <h2>🎉 Parabéns, Conquistador!</h2>
+            <p>Este certificado atesta que o estudante concluiu com excelência todos os módulos da Trilha de Cibersegurança:</p>
+            <div class="certificado-nome">Marcelo Bispo De Oliveira Junior</div>
+            <p>Demonstrando dedicação e competência técnica em Fundamentos, Redes, Análise Defensiva (Blue Team), Operações Ofensivas (Red Team), Governança e Preparação de Carreira.</p>
+            <button class="btn-fechar-modal" onclick="fecharCertificado()">Fechar Certificado</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>💡 Dica: Marque os tópicos e utilize o bloco de anotações em cada módulo para registrar seus comandos | © 2026 Trilha Cibersegurança</p>
+    </footer>
+
+    <script>
+        // Efeito Matrix (Chuva de números e letras caindo no fundo)
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        const fontSize = 16;
+        let columns = 0;
+        let drops = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let i = 0; i < columns; i++) { drops[i] = 1; }
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const characters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>[]{}§±_/\\';
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillStyle = Math.random() > 0.65 ? getComputedStyle(document.body).getPropertyValue('--primary') : getComputedStyle(document.body).getPropertyValue('--accent');
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        // Seletor de Cores / Temas
+        function setTheme(theme, btnElement) {
+            document.body.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            localStorage.setItem('cyberTheme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('cyberTheme');
+        if (savedTheme) {
+            setTheme(savedTheme, document.querySelector(`.theme-btn[onclick*="${savedTheme}"]`) || document.querySelector('.theme-btn'));
+        }
+
+        // Dados da Trilha
+        const trilhas = [
+            {
+                id: 1, nivel: 1, titulo: "Fundamentos de Cibersegurança", tempo: "3-4 semanas", icon: "📚",
+                descricao: "Conceitos essenciais que formam a base de qualquer profissional de segurança da informação.",
+                topicos: [
+                    "Tríade CIA (Confidencialidade, Integridade, Disponibilidade)",
+                    "Superfície de ataque e vetor de ameaças",
+                    "Engenharia social e técnicas de Phishing",
+                    "Políticas de senhas robustas e MFA",
+                    "Introdução ao ciclo de vida de incidentes"
+                ],
+                recursos: [
+                    { nome: "Cartilha de Segurança para Internet (CERT.br)", url: "https://cartilha.cert.br" },
+                    { nome: "Google Cybersecurity Professional Certificate", url: "https://www.coursera.org/professional-certificates/google-cybersecurity" },
+                    { nome: "Portal de Incidentes CERT.br", url: "https://www.cert.br" }
+                ]
+            },
+            {
+                id: 2, nivel: 1, titulo: "Sistemas Operacionais (Windows & Linux)", tempo: "3-4 semanas", icon: "💻",
+                descricao: "Domínio profundo de ambientes Linux e Windows, essenciais para analistas e operadores.",
+                topicos: [
+                    "Estrutura de arquivos e permissões no Linux (Chmod/Chown)",
+                    "Terminal Linux: navegação, busca e processos",
+                    "Gerenciamento de usuários, grupos e sudoers",
+                    "Windows: Registro, ACLs e permissões NTFS",
+                    "Serviços, tarefas agendadas e logs (Event Viewer / Syslog)"
+                ],
+                recursos: [
+                    { nome: "Terminal Root (Conteúdo avançado de Linux/Shell)", url: "https://terminalroot.com.br" },
+                    { nome: "Diolinux (Comunidade e tutoriais Linux)", url: "https://diolinux.com.br" },
+                    { nome: "Microsoft Learn Brasil (Documentação Windows)", url: "https://learn.microsoft.com/pt-br/" }
+                ]
+            },
+            {
+                id: 3, nivel: 2, titulo: "Redes de Computadores", tempo: "4 semanas", icon: "🌐",
+                descricao: "Entenda o tráfego de dados, protocolos e arquitetura de redes para identificar anomalias.",
+                topicos: [
+                    "Modelo OSI e pilha TCP/IP",
+                    "Protocolos cruciais: TCP, UDP, DNS, DHCP, HTTP/HTTPS",
+                    "Endereçamento IP, subredes (Subnetting) e portas",
+                    "Dispositivos: Roteadores, Switches, Firewalls e Proxies",
+                    "Análise de pacotes com Wireshark"
+                ],
+                recursos: [
+                    { nome: "NIC.br (Núcleo de Informação e Coordenação do Ponto BR)", url: "https://www.nic.br" },
+                    { nome: "Cisco Networking Academy Brasil", url: "https://www.netacad.com/pt" },
+                    { nome: "Wireshark Network Analyzer", url: "https://www.wireshark.org" }
+                ]
+            },
+            {
+                id: 4, nivel: 2, titulo: "Criptografia Essencial", tempo: "2-3 semanas", icon: "🔐",
+                descricao: "Como os dados são protegidos em trânsito e em repouso através de criptografia.",
+                topicos: [
+                    "Criptografia Simétrica (AES) vs Assimétrica (RSA)",
+                    "Funções Hash (SHA-256) e integridade",
+                    "Assinaturas digitais e PKI",
+                    "Certificados SSL/TLS e HTTPS na web",
+                    "Implementação prática com OpenSSL"
+                ],
+                recursos: [
+                    { nome: "ITI - Instituto Nacional de Tecnologia da Inf. (ICP-Brasil)", url: "https://www.iti.gov.br" },
+                    { nome: "CyberChef (Ferramenta de Hash e Criptografia)", url: "https://gchq.github.io/CyberChef/" },
+                    { nome: "Let's Encrypt (Certificados HTTPS)", url: "https://letsencrypt.org/pt-br/" }
+                ]
+            },
+            {
+                id: 5, nivel: 3, titulo: "Defesa Cibernética & SOC (Blue Team)", tempo: "4-5 semanas", icon: "🛡️",
+                descricao: "Monitore redes, analise logs de segurança, responda a incidentes e mitigue ameaças.",
+                topicos: [
+                    "Arquitetura e rotina de um Security Operations Center (SOC N1)",
+                    "Análise de logs de eventos (Windows Event Logs / Syslog)",
+                    "Detecção de ameaças e introdução a SIEM (Splunk / ELK)",
+                    "Frameworks de defesa: MITRE ATT&CK e Kill Chain",
+                    "Resposta a Incidentes: triagem, contenção e erradicação"
+                ],
+                recursos: [
+                    { nome: "CERT.br - Centro de Resposta a Incidentes de Segurança", url: "https://www.cert.br" },
+                    { nome: "MITRE ATT&CK Framework", url: "https://attack.mitre.org" },
+                    { nome: "LetsDefend (Plataforma Prática de SOC)", url: "https://letsdefend.io" }
+                ]
+            },
+            {
+                id: 6, nivel: 4, titulo: "Hacking Ético & Pentest (Red Team)", tempo: "4-5 semanas", icon: "⚔️",
+                descricao: "Aprenda a mentalidade do atacante para conseguir antecipar falhas e vulnerabilidades.",
+                topicos: [
+                    "Fases de um Pentest (Recon, Scanners, Exploração)",
+                    "Reconhecimento passivo e ativo com OSINT e Nmap",
+                    "Varredura de vulnerabilidades com Nessus / OpenVAS",
+                    "Introdução ao Metasploit Framework",
+                    "Vulnerabilidades web comuns (OWASP Top 10)"
+                ],
+                recursos: [
+                    { nome: "OWASP Chapter Brazil", url: "https://owasp.org/www-chapter-brazil/" },
+                    { nome: "TryHackMe (Laboratórios Práticos)", url: "https://tryhackme.com" },
+                    { nome: "Kali Linux Distribution", url: "https://www.kali.org" }
+                ]
+            },
+            {
+                id: 7, nivel: 4, titulo: "Governança, Riscos, Compliance & LGPD", tempo: "2-3 semanas", icon: "📋",
+                descricao: "Aspectos legais, marcos regulatórios e gestão de riscos em segurança da informação.",
+                topicos: [
+                    "Governança de TI e normas (ISO 27001 / NIST)",
+                    "Gestão de Riscos de Segurança da Informação",
+                    "LGPD: princípios, direitos e obrigações",
+                    "Papéis de Controlador, Operador e Encarregado (DPO)",
+                    "Notificação de incidentes e conformidade"
+                ],
+                recursos: [
+                    { nome: "ANPD - Autoridade Nacional de Proteção de Dados", url: "https://www.gov.br/anpd/pt-br" },
+                    { nome: "ISO/IEC 27001 Official", url: "https://www.iso.org/iso-27001-information-security.html" },
+                    { nome: "Framework NIST de Cibersegurança", url: "https://www.nist.gov/cyberframework" }
+                ]
+            },
+            {
+                id: 8, nivel: 5, titulo: "Guia de Carreira, Currículo & Entrevistas", tempo: "2 semanas", icon: "🎯",
+                descricao: "Estratégias práticas para ingressar no mercado de trabalho em vagas SOC N1 e NOC.",
+                topicos: [
+                    "Elaboração de currículo focado em cibersegurança e TI",
+                    "Otimização do perfil no LinkedIn e portfólio no GitHub",
+                    "Perguntas técnicas mais comuns em entrevistas de SOC N1",
+                    "Como demonstrar projetos de laboratório prático para recrutadores",
+                    "Simulação de incidentes e postura em processos seletivos"
+                ],
+                recursos: [
+                    { nome: "DIO (Digital Innovation One)", url: "https://www.dio.me" },
+                    { nome: "LinkedIn Brasil", url: "https://www.linkedin.com" },
+                    { nome: "GitHub (Portfólio de Projetos)", url: "https://github.com" }
+                ]
+            }
+        ];
+
+        function renderizarTrilha() {
+            const container = document.getElementById('conteudo');
+            container.innerHTML = '';
+
+            trilhas.forEach(trilha => {
+                const card = document.createElement('div');
+                card.className = `card level-${trilha.nivel}`;
+                
+                let topicosHtml = trilha.topicos.map((topico, idx) => `
+                    <li>
+                        <input type="checkbox" data-trilha="${trilha.id}" data-topico="${idx}" onchange="atualizarProgresso()">
+                        <span>${topico}</span>
+                    </li>
+                `).join('');
+
+                let recursosHtml = trilha.recursos.map(rec => `
+                    <li><a href="${rec.url}" target="_blank" rel="noopener noreferrer">📌 ${rec.nome} ↗</a></li>
+                `).join('');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            <div class="icon">${trilha.icon}</div>
+                            <div>
+                                <h3>${trilha.titulo}</h3>
+                                <span class="tempo">⏱️ ${trilha.tempo}</span>
+                            </div>
+                        </div>
+                        <p>${trilha.descricao}</p>
+                    </div>
+                    <div>
+                        <button class="btn-expandir" onclick="toggleDetalhes(this)">Ver Conteúdo & Anotações</button>
+                        <div class="detalhes">
+                            <div class="card-topicos">
+                                <h4>Tópicos do Módulo (Marque conforme estudar):</h4>
+                                <ul>${topicosHtml}</ul>
+                            </div>
+                            <div class="card-recursos">
+                                <h4>Recursos & Ferramentas Recomendadas:</h4>
+                                <ul>${recursosHtml}</ul>
+                            </div>
+                            <div class="bloco-notas">
+                                <h4>📝 Suas Anotações & Comandos:</h4>
+                                <textarea id="nota-${trilha.id}" placeholder="Escreva suas anotações aqui (salva automaticamente)..." oninput="salvarNota(${trilha.id})"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            carregarDadosSalvos();
+        }
+
+        function toggleDetalhes(button) {
+            const detalhes = button.nextElementSibling;
+            detalhes.classList.toggle('ativo');
+            button.textContent = detalhes.classList.contains('ativo') ? 'Ocultar Conteúdo' : 'Ver Conteúdo & Anotações';
+        }
+
+        function atualizarProgresso() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let total = checkboxes.length;
+            let concluidos = 0;
+            let estadoProgresso = {};
+
+            checkboxes.forEach(cb => {
+                const chave = `t${cb.dataset.trilha}_p${cb.dataset.topico}`;
+                if (cb.checked) {
+                    concluidos++;
+                    estadoProgresso[chave] = true;
+                } else {
+                    estadoProgresso[chave] = false;
+                }
+            });
+
+            localStorage.setItem('progressoCyberPro', JSON.stringify(estadoProgresso));
+
+            const porcentagem = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+            document.getElementById('barraProgresso').style.width = `${porcentagem}%`;
+            document.getElementById('progressoTexto').textContent = `${porcentagem}%`;
+
+            const btnCertificado = document.getElementById('btn-certificado');
+            if (porcentagem === 100) {
+                btnCertificado.style.display = 'inline-block';
+            } else {
+                btnCertificado.style.display = 'none';
+            }
+        }
+
+        function salvarNota(idTrilha) {
+            const texto = document.getElementById(`nota-${idTrilha}`).value;
+            localStorage.setItem(`notaCyber_${idTrilha}`, texto);
+        }
+
+        function carregarDadosSalvos() {
+            try {
+                const salvoProgresso = JSON.parse(localStorage.getItem('progressoCyberPro'));
+                if (salvoProgresso) {
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
+                        const chave = `t${cb.dataset.trilha}_p${cb.dataset.topico}`;
+                        if (salvoProgresso[chave]) cb.checked = true;
+                    });
+                }
+
+                trilhas.forEach(t => {
+                    const notaSalva = localStorage.getItem(`notaCyber_${t.id}`);
+                    if (notaSalva) {
+                        const textarea = document.getElementById(`nota-${t.id}`);
+                        if (textarea) textarea.value = notaSalva;
+                    }
+                });
+
+                atualizarProgresso();
+            } catch (e) {
+                console.error("Erro ao carregar dados salvos:", e);
+            }
+        }
+
+        function exportarBackup() {
+            let dados = { progresso: {}, notas: {} };
+            try {
+                dados.progresso = JSON.parse(localStorage.getItem('progressoCyberPro')) || {};
+                trilhas.forEach(t => {
+                    dados.notas[t.id] = localStorage.getItem(`notaCyber_${t.id}`) || '';
+                });
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", "backup_trilha_ciberseguranca.json");
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            } catch (e) {
+                alert("Erro ao exportar backup.");
+            }
+        }
+
+        function importarBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    if (dados.progresso) {
+                        localStorage.setItem('progressoCyberPro', JSON.stringify(dados.progresso));
+                    }
+                    if (dados.notas) {
+                        Object.keys(dados.notas).forEach(id => {
+                            localStorage.setItem(`notaCyber_${id}`, dados.notas[id]);
+                        });
+                    }
+                    renderizarTrilha();
+                    alert("Backup importado com sucesso!");
+                } catch (err) {
+                    alert("Arquivo de backup inválido.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function abrirCertificado() {
+            document.getElementById('modalCertificado').style.display = 'flex';
+        }
+        function fecharCertificado() {
+            document.getElementById('modalCertificado').style.display = 'none';
+        }
+
+        window.onload = renderizarTrilha;
+    </script>
+</body>
+</html>
