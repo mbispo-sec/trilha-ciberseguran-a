@@ -21,7 +21,7 @@ Uma plataforma web interativa, moderna e estruturada para guiar estudantes e ini
 ## 🌐 Acesso Online
 
 Você pode acessar a versão pública e interativa do projeto através do link:
-👉 (https://mbispo-sec.github.io/trilha-ciberseguran-a/)
+👉 https://mbispo-sec.github.io/trilha-ciberseguran-a/
 
 ---
 💡 *Projeto desenvolvido com foco na evolução contínua e compartilhamento de conhecimento na área de tecnologia e segurança da informação.*
